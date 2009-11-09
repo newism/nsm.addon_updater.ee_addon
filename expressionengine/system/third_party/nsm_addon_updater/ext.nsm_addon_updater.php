@@ -50,7 +50,6 @@ class Nsm_addon_updater_ext
 
 	public function settings_form()
 	{
-		$DB =& $this->EE->db;
 		$this->EE->lang->loadfile('nsm_addon_updater');
 		$this->EE->load->library('form_validation');
 
@@ -68,11 +67,11 @@ class Nsm_addon_updater_ext
 			}
 		}
 
-		$vars['member_groups'] = $DB->query("SELECT group_id, group_title
-											FROM exp_member_groups
-											WHERE site_id = ".SITE_ID."
-											ORDER BY group_title")
-									->result_array();
+		$vars['member_groups'] = $DB->select('group_id, group_title')
+		                            ->where('side_id', SITE_ID)
+		                            ->order_by('group_title')
+		                            ->get('member_groups')
+									              ->result_array();
 
 		$vars['addon_name'] = $this->addon_name;
 		return $this->EE->load->view(__CLASS__ . '/form_settings', $vars, TRUE);
@@ -83,12 +82,11 @@ class Nsm_addon_updater_ext
 		$settings = FALSE;
 		if(isset($SESS->cache[$this->addon_name][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
 		{
-			$settings_query = $this->EE->db->query("SELECT `settings` 
-													FROM `exp_extensions`
-													WHERE `enabled` = 'y'
-													AND `class` = '".__CLASS__."'
-													LIMIT 1"
-												);
+			$settings_query = $this->EE->db->select('settings')
+			                               ->where('enabled', 'y')
+			                               ->where('class', __CLASS__)
+			                               ->get('extensions', 1);
+			                               
 			if($settings_query->num_rows())
 			{
 				$settings = unserialize($settings_query->row()->settings);
@@ -104,8 +102,8 @@ class Nsm_addon_updater_ext
 
 	protected function save_settings_to_db($settings)
 	{
-		$DB =& $this->EE->db;
-		$DB->query($DB->update_string("exp_extensions", array("settings" => serialize($settings)), array("class" => __CLASS__)));
+		$this->EE->db->where('class', __CLASS__)
+		             ->update('extensions', array('settings' => serialize($settings)));
 	}
 
 	protected function save_settings_to_session($settings)
@@ -164,7 +162,7 @@ class Nsm_addon_updater_ext
 						}
 					}
 				}
-				print $this->EE->load->view("../third_party/nsm_addon_updater/views/Nsm_addon_updater_ext/updates", array('versions' => $versions), TRUE);
+				$this->EE->load->view("../third_party/nsm_addon_updater/views/Nsm_addon_updater_ext/updates", array('versions' => $versions));
 				die();
 			}
 			else
@@ -177,9 +175,6 @@ class Nsm_addon_updater_ext
 
 	private function create_hooks($hooks = FALSE)
 	{
-
-		global $DB;
-
 		if(!$hooks)
 			$hooks = $this->hooks;
 
@@ -203,14 +198,14 @@ class Nsm_addon_updater_ext
 			}
 			$hook = array_merge($hook_template, $data);
 			$hook['settings'] = serialize($hook['settings']);
-			$this->EE->db->query($this->EE->db->insert_string('exp_extensions', $hook));
+			$this->EE->db->insert('extensions', $hook);
 		}
 		
 	}
 
 	private function delete_hooks()
 	{
-		$this->EE->db->where('class', __CLASS__)->delete('exp_extensions');
+		$this->EE->db->where('class', __CLASS__)->delete('extensions');
 	}
 
 	private function get_update_feeds()
