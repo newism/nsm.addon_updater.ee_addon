@@ -64,7 +64,7 @@ class Nsm_addon_updater_ext
 	{
 		$this->EE =& get_instance();
 
-    require_once $this->EE->config->system_url() . "expressionengine/third_party/nsm_addon_updater/libraries/Epicurl.php";
+    require_once APPPATH . "third_party/nsm_addon_updater/libraries/Epicurl.php";
 
 		// define a constant for the current site_id rather than calling $PREFS->ini() all the time
 		if(defined('SITE_ID') == FALSE)
