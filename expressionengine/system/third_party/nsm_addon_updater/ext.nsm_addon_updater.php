@@ -63,9 +63,6 @@ class Nsm_addon_updater_ext
 	public function __construct($settings='')
 	{
 		$this->EE =& get_instance();
-
-    require_once $this->EE->config->system_url() . "expressionengine/third_party/nsm_addon_updater/libraries/Epicurl.php";
-
 		// define a constant for the current site_id rather than calling $PREFS->ini() all the time
 		if(defined('SITE_ID') == FALSE)
 			define('SITE_ID', $this->EE->config->item("site_id"));
@@ -250,6 +247,7 @@ class Nsm_addon_updater_ext
 
 	private function get_update_feeds()
 	{	
+		require APPPATH . "third_party/nsm_addon_updater/libraries/Epicurl.php";
 		$sources = FALSE;
 		$feeds = FALSE;
 		$mc = EpiCurl::getInstance();
