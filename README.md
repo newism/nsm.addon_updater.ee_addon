@@ -7,11 +7,12 @@ If you want to include NSM Addon updater support in your addon just add the foll
 
 	public $versions_xml = "http://yourdomain.com/versions.xml";
 
-The url should point to a valid RSS 2.0 XML feed that lists individual versions of your addon as <items>. There is only one required addition to a standard feed: <ee_addon:version>1.0.0b1</ee_addon:version> which is used for version comparison.
+The url should point to a valid RSS 2.0 XML feed that lists individual versions of your addon as <items>. There is only one required addition to a standard feed: `<ee_addon:version>1.0.0b1</ee_addon:version>` which is used for version comparison.
 
 Each feed is individually cached so that the CURL calls don't stall the loading of the CP. Additionally the calls are made via AJAX so there should be no negative affect on CP load.
 
-Example RSS 2.0 XML Feed:
+Example RSS 2.0 XML Feed
+------------------------
 
 	<?xml version="1.0" encoding="utf-8"?>
 	<rss version="2.0" xmlns:ee_addon="http://expressionengine-addons.com/nsm_addon_updater/#rss-xml">
@@ -21,6 +22,7 @@ Example RSS 2.0 XML Feed:
 			<description>Most recent changes with links to updates.</description>
 			<item>
 				<title>Version 1.0.0b1</title>
+				<!-- Additional tag required for NSM Addon Updater -->
 				<ee_addon:version>1.0.0b1</ee_addon:version>
 				<link>http://yourdomain.com/nsm.addon_updater.ee_addon/1.0.0b1/</link>
 				<pubDate>Wed, 09 Jan 2006 19:20:11 +0000</pubDate>
