@@ -104,11 +104,11 @@ class Nsm_addon_updater_ext
 			}
 		}
 
-		$vars['member_groups'] = $DB->select('group_id, group_title')
-		                            ->where('side_id', SITE_ID)
+		$vars['member_groups'] = $this->EE->db->select('group_id, group_title')
+		                            ->where('site_id', SITE_ID)
 		                            ->order_by('group_title')
 		                            ->get('member_groups')
-									              ->result_array();
+									->result_array();
 
 		$vars['addon_name'] = $this->addon_name;
 		return $this->EE->load->view(__CLASS__ . '/form_settings', $vars, TRUE);
@@ -163,7 +163,7 @@ class Nsm_addon_updater_ext
 				$updated_addons = FALSE;
 
 				if(!$feeds = $this->get_update_feeds())
-					return FALSE;
+					die();
 
 				foreach ($feeds as $addon_id => $feed)
 				{
@@ -268,7 +268,10 @@ class Nsm_addon_updater_ext
 						$this->write_cache($xml, $addon->versions_xml);
 					}
 				}
-				$feeds[$addon_id] = simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA);
+				if($xml = simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
+				{
+					$feeds[$addon_id] = $xml;
+				}
 			}
 		}
 		return $feeds;
