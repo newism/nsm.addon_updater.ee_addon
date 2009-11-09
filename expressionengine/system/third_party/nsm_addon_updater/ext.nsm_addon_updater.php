@@ -77,7 +77,7 @@ class Nsm_addon_updater_ext
 
 	public function disable_extension()
 	{
-		// $this->delete_hooks();
+		$this->delete_hooks();
 	}
 
 	public function update_extension()
