@@ -1,4 +1,4 @@
-<?= form_open('C=addons_extensions&M=extension_settings&file=&file=nsm_addon_updater', '',
+<?php print form_open('C=addons_extensions&M=extension_settings&file=&file=nsm_addon_updater', '',
 		array(
 			"file" => "nsm_addon_updater",
 			"Nsm_addon_updater_ext[check_for_updates]" => 0,
@@ -8,7 +8,7 @@
 
 <?php if(validation_errors()) : ?>
 	<div class="mor alert error">
-		<?= validation_errors() ?>
+		<?php print validation_errors() ?>
 	</div>
 <?php endif; ?>
 
@@ -19,34 +19,34 @@
 <?php endif; ?>
 
 <div class="nsm tg">
-	<h2><?= lang('enable_extension_title') ?></h2>
+	<h2><?php print lang('enable_extension_title') ?></h2>
 	<div class="info">
-		<?= str_replace("{addon_name}", $addon_name, lang('enable_extension_info')); ?>
+		<?php print str_replace("{addon_name}", $addon_name, lang('enable_extension_info')); ?>
 	</div>
 	<table>
 		<tbody>
 			<tr class="even">
 				<th scope="row">
-					<?= lang('enable_extension_label', 'enabled') ?>
+					<?php print lang('enable_extension_label', 'enabled') ?>
 				</th>
 				<td>
 					<select name="Nsm_addon_updater_ext[enabled]" id='enabled' class='toggle'>
-					<option value="1"<?= $settings['enabled'] ? "selected='selected'" : "" ?>><?=lang('yes')?></option>
-					<option value="0"<?= !$settings['enabled'] ? "selected='selected'" : "" ?>><?=lang('no')?></option>
+					<option value="1"<?php print $settings['enabled'] ? "selected='selected'" : "" ?>><?=lang('yes')?></option>
+					<option value="0"<?php print !$settings['enabled'] ? "selected='selected'" : "" ?>><?=lang('no')?></option>
 					</select>
 				</td>
 			</tr>
 			<tr class="odd">
 				<th scope="row">
-					<?= lang('cache_expiration_label', 'cache_expiraton') ?>
+					<?php print lang('cache_expiration_label', 'cache_expiraton') ?>
 				</th>
-				<td<?= form_error('Nsm_addon_updater_ext[cache_expiration]') ? " class='error'" : ""?>>
-					<?= form_error('Nsm_addon_updater_ext[cache_expiration]'); ?>
+				<td<?php print form_error('Nsm_addon_updater_ext[cache_expiration]') ? " class='error'" : ""?>>
+					<?php print form_error('Nsm_addon_updater_ext[cache_expiration]'); ?>
 					<input
 						type="text"
 						name="Nsm_addon_updater_ext[cache_expiration]"
 						id='cache_expiration'
-						value='<?= form_prep($settings['cache_expiration']); ?>'
+						value='<?php print form_prep($settings['cache_expiration']); ?>'
 					>
 				</td>
 			</tr>
@@ -55,20 +55,20 @@
 </div>
 
 <div class="nsm tg">
-	<h2><?= lang('extension_access_title') ?></h2>
+	<h2><?php print lang('extension_access_title') ?></h2>
 	<table>
 		<tbody>
 			<tr class="even">
-				<th><?= lang('member_group_access_label') ?></th>
+				<th><?php print lang('member_group_access_label') ?></th>
 				<td>
 				<?php foreach($member_groups as $member_group) :?>
-				<?= lang($member_group['group_title'], 'member_group-' . $member_group['group_id']) ?>
+				<?php print lang($member_group['group_title'], 'member_group-' . $member_group['group_id']) ?>
 				<input
 					type='checkbox'
-					name='Nsm_addon_updater_ext[member_groups][<?= $member_group['group_id'] ?>][show_notification]'
-					id='member_group-<?= $member_group['group_id'] ?>'
+					name='Nsm_addon_updater_ext[member_groups][<?php print $member_group['group_id'] ?>][show_notification]'
+					id='member_group-<?php print $member_group['group_id'] ?>'
 					value='1'
-					<?= (isset($settings['member_groups'][$member_group['group_id']]['show_notification'])) ? "checked='checked'" : ""; ?>
+					<?php print (isset($settings['member_groups'][$member_group['group_id']]['show_notification'])) ? "checked='checked'" : ""; ?>
 				/>
 				<?php endforeach; ?>
 				</td>
@@ -77,6 +77,6 @@
 	</table>
 </div>
 
-<input type='submit' value='<?= lang('save_extension_settings'); ?>' />
+<input type='submit' value='<?php print lang('save_extension_settings'); ?>' />
 
-<?= form_close(); ?>
+<?php print form_close(); ?>

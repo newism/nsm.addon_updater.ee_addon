@@ -1,6 +1,6 @@
 <?php if($versions != FALSE) : ?>
-<table id="nsm_au_updates" class="mainTable" style="clear:left; margin-left:3.3%; margin-right:3.3%; width:auto" cellspacing="0">
-	<caption>The following addon updates are available</caption>
+<p>The following addon updates are available</p>
+<table id="nsm_au_updates" class="mainTable" cellspacing="0">
 	<thead>
 		<tr>
 			<th scope="col">Addon</th>
@@ -14,35 +14,36 @@
 	<tbody>
 		<?php foreach ($versions as $count => $version) : $class = ($count%2) ? "even" : "odd"; ?>
 		<tr class="<?=$class?>">
-			<th scope="row"><?= $version['addon_name']; ?></th>
-			<td><?= $version['installed_version']; ?></td>
-			<td><?= $version['latest_version']; ?></td>
+			<td scope="row"><?php print $version['addon_name']; ?></td>
+			<td><?php print $version['installed_version']; ?></td>
+			<td><?php print $version['latest_version']; ?></td>
 			<td>
 				<?php if ($version['notes']) : ?>
-					<a href="#" class="note-trigger">Version notes</a>
+					<a href="#" class="note-trigger">Release notes</a>
 				<?php endif; ?>
 			</td>
 			<td>
 				<?php if ($version['docs_url']) : ?>
-					<a href="<?= $version['docs_url']; ?>" rel="external">Visit site</a></td>
+					<a href="<?php print $version['docs_url']; ?>" rel="external">Visit site</a></td>
 				<?php endif; ?>
 			</td>
 			<td>
 				<?php if ($version['download']) : ?>
-					<a href="<?= $version['download']['url']; ?>" rel="external">Direct download</a>
+					<a href="<?php print $version['download']['url']; ?>" rel="external">Direct download</a>
 				<?php endif; ?>
 			</td>
 		</tr>
 		<?php if ($version['notes']) : ?>
 		<tr class="<?=$class?>" style="display:none">
 			<td colspan="5">
-				<h2><?= $version['title']; ?></h2>
-				<p>Published: <?= $version['created_at']; ?></p>
-				<?= $version['notes']; ?>
+				<h2><?php print $version['title']; ?></h2>
+				<p>Published: <?php print $version['created_at']; ?></p>
+				<?php print $version['notes']; ?>
 			</td>
 		</tr>
 		<?php endif; ?>
 		<?php endforeach; ?>
 	</tbody>
 </table>
+<p>Installed Extensions</p>
 <?php endif; ?>
