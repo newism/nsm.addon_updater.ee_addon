@@ -1,7 +1,7 @@
 NSM Addon Updater 1.0.0a1
 =========================
 
-NSM Addon Updater is an EE 2.0 extension that checks an external RSS feed for version updates and displays them on your CP homepage.
+NSM Addon Updater is an EE 2.0 extension that checks an external RSS feed for version updates and displays them in your Extension admin.
 
 If you want to include NSM Addon updater support in your addon just add the following public variable to any extension class:
 
