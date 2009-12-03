@@ -1,7 +1,7 @@
 (function($) {
 	$(document).ready(function() {
 		$.ajax({
-			url: EE.BASE + "&C=homepage&nsm_addon_updater=true",
+			url: EE.BASE + "&nsm_addon_updater=true",
 			async: true,
 			success: function(data){
 				$resp = $(data);
