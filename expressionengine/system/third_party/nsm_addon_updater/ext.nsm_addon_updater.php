@@ -49,7 +49,7 @@ class Nsm_addon_updater_ext
 	public $name = "NSM Addon Updater";
 	public $version = '1.0.0a1';
 	public $docs_url = "http://leevigraham.com/";
-	public $versions_xml = "http://yourdomain.com/versions.xml";
+	public $versions_xml = "https://github.com/newism/nsm.addon_updater.ee_addon/raw/master/expressionengine/system/third_party/nsm_addon_updater/versions.xml";
 
 	public $settings_exist = "y";
 	private $default_settings = array(
@@ -62,11 +62,25 @@ class Nsm_addon_updater_ext
 
 	public function __construct($settings='')
 	{
+
 		$this->EE =& get_instance();
+
 		// define a constant for the current site_id rather than calling $PREFS->ini() all the time
 		if(defined('SITE_ID') == FALSE)
 			define('SITE_ID', $this->EE->config->item("site_id"));
+
 		$this->settings = ($settings == FALSE) ? $this->get_settings() : $this->save_settings_to_session($settings);
+
+		if(
+			$this->EE->input->get('D') == 'cp'
+			&& $this->EE->input->get('C') == 'addons_extensions'
+			&& isset($this->EE->cp)
+			&& isset($this->settings['member_groups'][$this->EE->session->userdata['group_id']]['show_notification']))
+		{
+			$script_url = $this->EE->config->system_url() . "expressionengine/third_party/nsm_addon_updater/views/js/update.js";
+			$this->EE->cp->add_to_foot("<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>");
+		}
+
 	}
 
 	public function activate_extension()
@@ -117,7 +131,7 @@ class Nsm_addon_updater_ext
 	private function get_settings($refresh = FALSE)
 	{
 		$settings = FALSE;
-		if(isset($SESS->cache[$this->addon_name][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
+		if(isset($this->EE->session->cache[$this->addon_name][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
 		{
 			$settings_query = $this->EE->db->select('settings')
 			                               ->where('enabled', 'y')
@@ -151,62 +165,53 @@ class Nsm_addon_updater_ext
 
 	public function sessions_end(&$sess)
 	{
-		$member_group_id = $sess->userdata['group_id'];
 		if(
-			$this->EE->input->get('D') == 'cp'
-			&& ($this->EE->input->get('C') == 'homepage' || $this->EE->input->get('C') == FALSE)
-			&& isset($this->settings['member_groups'][$member_group_id]['show_notification'])
+			$this->EE->input->get('nsm_addon_updater') == TRUE
+			&& isset($this->settings['member_groups'][$sess->userdata['group_id']]['show_notification'])
 		)
 		{
-			if($this->EE->input->get('nsm_addon_updater'))
+			$versions = FALSE;
+
+			if(!$feeds = $this->get_update_feeds())
+				die();
+
+			foreach ($feeds as $addon_id => $feed)
 			{
-				$updated_addons = FALSE;
-
-				if(!$feeds = $this->get_update_feeds())
-					die();
-
-				foreach ($feeds as $addon_id => $feed)
+				$namespaces = $feed->getNameSpaces(true);
+				$latest_version = 0;
+				foreach ($feed->channel->item as $version)
 				{
-					$namespaces = $feed->getNameSpaces(true);
-					$latest_version = 0;
-					foreach ($feed->channel->item as $version)
+					$ee_addon = $version->children($namespaces['ee_addon']);
+
+					$version_number = (string)$ee_addon->version;
+					if(
+						version_compare($version_number, $this->EE->extensions->OBJ[$addon_id]->version, '>')
+						&& version_compare($version_number, $latest_version, '>')
+					)
 					{
-						$ee_addon = $version->children($namespaces['ee_addon']);
-						$version_number = (string)$ee_addon->version;
-						if(
-							version_compare($version_number, $this->EE->extensions->OBJ[$addon_id]->version, '>')
-							&& $version_number > $latest_version
-						)
+						$latest_version = $version_number;
+
+						$versions[$addon_id]['addon_name'] = $this->EE->extensions->OBJ[$addon_id]->name;
+						$versions[$addon_id]['installed_version'] = $this->EE->extensions->OBJ[$addon_id]->version;
+
+						$versions[$addon_id]['title'] = (string)$version->title;
+						$versions[$addon_id]['latest_version'] = $version_number;
+						$versions[$addon_id]['notes'] = (string)$version->description;
+						$versions[$addon_id]['docs_url'] = (string)$version->link;
+						$versions[$addon_id]['download'] = FALSE;
+						$versions[$addon_id]['created_at'] = $version->pubDate;
+
+						if($version->enclosure)
 						{
-							$latest_version = $version_number;
-
-							$versions[$addon_id]['addon_name'] = $this->EE->extensions->OBJ[$addon_id]->name;
-							$versions[$addon_id]['installed_version'] = $this->EE->extensions->OBJ[$addon_id]->version;
-
-							$versions[$addon_id]['title'] = (string)$version->title;
-							$versions[$addon_id]['latest_version'] = $version_number;
-							$versions[$addon_id]['notes'] = (string)$version->description;
-							$versions[$addon_id]['docs_url'] = (string)$version->link;
-							$versions[$addon_id]['download'] = FALSE;
-							$versions[$addon_id]['created_at'] = $version->pubDate;
-
-							if($version->enclosure)
-							{
-								$versions[$addon_id]['download']['url'] = (string)$version->enclosure['url'];
-								$versions[$addon_id]['download']['type'] = (string)$version->enclosure['type'];
-								$versions[$addon_id]['download']['size'] = (string)$version->enclosure['length'];
-							}
+							$versions[$addon_id]['download']['url'] = (string)$version->enclosure['url'];
+							$versions[$addon_id]['download']['type'] = (string)$version->enclosure['type'];
+							$versions[$addon_id]['download']['size'] = (string)$version->enclosure['length'];
 						}
 					}
 				}
-				$this->EE->load->view("../third_party/nsm_addon_updater/views/Nsm_addon_updater_ext/updates", array('versions' => $versions));
-				die();
 			}
-			else
-			{
-				$script_url = $this->EE->config->system_url() . "expressionengine/third_party/nsm_addon_updater/js/update.js";
-				$this->EE->load->vars(array('additional_head' => "<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>"));
-			}
+			print($this->EE->load->view("../third_party/nsm_addon_updater/views/Nsm_addon_updater_ext/updates", array('versions' => $versions), TRUE));
+			die();
 		}
 	}
 
@@ -257,12 +262,13 @@ class Nsm_addon_updater_ext
 			{
 				if(!$xml = $this->get_cache($addon->versions_xml))
 				{
-					$xml = FALSE;
 					$c = FALSE;
 					$c = curl_init($addon->versions_xml);
 					curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+					curl_setopt($c, CURLOPT_FOLLOWLOCATION, 1);
 					$curls[$addon_id] = $mc->addCurl($c);
-					if($curls[$addon_id]->code == "200")
+					$xml = FALSE;
+					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302")
 					{
 						$xml = $curls[$addon_id]->data;
 						$this->write_cache($xml, $addon->versions_xml);
