@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:ee_addon="http://yourdomain.com/nsm_addon_updater/#rss-xml">
+<rss version="2.0" xmlns:ee_addon="http://newism.com.au/nsm_addon_updater/#rss-xml">
 	<channel>
 		<title>NSM Addon Updater Changelog</title>
 		<link>https://github.com/newism/nsm.addon_updater.ee_addon/versions.xml</link>
@@ -15,7 +15,7 @@
 				</ul>
 			]]>
 			</description>
-			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/master" length="1623481" type="application/zip" />
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a1" length="16384" type="application/zip" />
 		 </item>
 	</channel>
 </rss>
