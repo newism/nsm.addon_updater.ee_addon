@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:ee_addon="http://yourdomain.com/nsm_addon_updater/#rss-xml">
+	<channel>
+		<title>NSM Addon Updater Changelog</title>
+		<link>https://github.com/newism/nsm.addon_updater.ee_addon/versions.xml</link>
+		<description>Most recent changes with links to updates.</description>
+		<item>
+			<title>Version 1.0.0a1</title>
+			<ee_addon:version>1.0.0a1</ee_addon:version>
+			<link>https://github.com/newism/nsm.addon_updater.ee_addon/</link>
+			<pubDate>Thursday, 01 Dec 2009 11:55:00 +1000</pubDate>
+			<description><![CDATA[
+				<ul>
+					<li>Initial release</li>
+				</ul>
+			]]>
+			</description>
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/master" length="1623481" type="application/zip" />
+		 </item>
+	</channel>
+</rss>
