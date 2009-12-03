@@ -5,8 +5,8 @@
 		<link>https://github.com/newism/nsm.addon_updater.ee_addon/versions.xml</link>
 		<description>Most recent changes with links to updates.</description>
 		<item>
-			<title>Version 1.0.0a1</title>
-			<ee_addon:version>1.0.0a1</ee_addon:version>
+			<title>Version 1.0.0</title>
+			<ee_addon:version>1.0.0</ee_addon:version>
 			<link>https://github.com/newism/nsm.addon_updater.ee_addon/</link>
 			<pubDate>Thursday, 01 Dec 2009 11:55:00 +1000</pubDate>
 			<description><![CDATA[
