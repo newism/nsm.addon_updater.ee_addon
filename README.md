@@ -1,6 +1,8 @@
 NSM Addon Updater 1.0.0a1
 =========================
 
+Written by: Leevi Graham, Technical Director of Newism, based on LG Addon Updater (EE1.x)
+
 NSM Addon Updater is an EE 2.0 extension that checks an external RSS feed for version updates and displays them in your extension admin.
 
 If you want to include NSM Addon updater support in your addon just add the following public variable to any extension class:
@@ -33,7 +35,7 @@ Example RSS 2.0 XML Feed
 					</ul>
 				]]>
 				</description>
-				<enclosure url="http://expressionengine-addons.com/nsm.addon_updater.ee_addon/download.zip?version=1.0.0b1" length="1623481" type="application/zip" />
+				<enclosure url="http://yourdomain.com/nsm.addon_updater.ee_addon/download.zip?version=1.0.0b1" length="1623481" type="application/zip" />
 			 </item>
 		</channel>
 	</rss>
