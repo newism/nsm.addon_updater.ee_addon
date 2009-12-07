@@ -274,7 +274,7 @@ class Nsm_addon_updater_ext
 						$this->write_cache($xml, $addon->versions_xml);
 					}
 				}
-				if($xml = simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
+				if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
 				{
 					$feeds[$addon_id] = $xml;
 				}
@@ -286,11 +286,12 @@ class Nsm_addon_updater_ext
 	private function write_cache($data, $url)
 	{
 		$path = $this->EE->config->item('cache_path');
-		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . __CLASS__;
+		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
+
 		$filepath = $cache_path ."/". md5($url) . ".xml";
 
 		if (! is_dir($cache_path))
-			mkdir($cache_path . "", 0777, TRUE);
+			@mkdir($cache_path . "", 0777, TRUE);
 		
 		if(! is_really_writable($cache_path))
 			return;
