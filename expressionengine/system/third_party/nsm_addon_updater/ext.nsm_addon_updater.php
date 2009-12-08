@@ -86,6 +86,11 @@ class Nsm_addon_updater_ext
 		if(defined('SITE_ID') == FALSE)
 			define('SITE_ID', $this->EE->config->item("site_id"));
 
+		// I'm not really sure about this
+		// the idea is that when there are settings (hooks) we just push the settings to the session for other classes to use
+		// otherwise we get the settings from the DB. This could be bad because each hook can apparently have it's own settings although this is unlikely
+		// There is one other issue, if the hook being called is sessions_start or sessions_end there is no session yet :(
+		// In that case we push the settings to the object manually in the method
 		$this->settings = ($settings == FALSE) ? $this->_getSettings() : $this->_saveSettingsToSession($settings);
 
 		if(
@@ -146,7 +151,7 @@ class Nsm_addon_updater_ext
 
 	/**
 	 * Prepares and loads the settings form for display in the ExpressionEngine control panel.
-	 * @version		2.0.0
+	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		public
 	 * @return		void
@@ -187,7 +192,7 @@ class Nsm_addon_updater_ext
 
 	/**
 	 * This function is called by ExpressionEngine whenever the "sessions_start" hook is executed. It checks the current hostname to see if the first segment matches one of the languages stored in the user's language directory. If it doesn't find a matching host domain segment, it checks the URL to see if the first segment matches one of the languages stored in the user's language directory. If either of the preceding conditions are true, the language, language display name and the user-defined path to the languages directory are all set as global variables. These variables are accessed by the Nsm_multi_language plugin.
-	 * @version		2.0.0
+	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		public
 	 * @param		object	&$sess	an object reference to the current session that the hook was called from.
@@ -196,6 +201,8 @@ class Nsm_addon_updater_ext
 	 **/
 	public function sessions_end(&$sess)
 	{
+		$this->_saveSettingsToSession($this->settings, $sess);
+
 		if(
 			$this->EE->input->get('nsm_addon_updater') == TRUE
 			&& isset($this->settings['member_groups'][$sess->userdata['group_id']]['show_notification'])
@@ -301,18 +308,30 @@ class Nsm_addon_updater_ext
 	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		protected
-	 * @param		array	$settings	an array of settings to save to the session.
+	 * @param		array		$settings	an array of settings to save to the session.
+	 * @param		array		$sess		A session object
 	 * @return		array		the provided settings array
 	 **/
-	private function _saveSettingsToSession($settings)
+	private function _saveSettingsToSession($settings, &$sess = FALSE)
 	{
-		$this->EE->session->cache[$this->addon_name][__CLASS__]['settings'] = $settings;
+		// if there is no $sess passed and EE's session is not instaniated
+		if($sess == FALSE && isset($this->EE->session->cache) == FALSE)
+			return $settings;
+
+		// if there is an EE session available and there is no custom session object
+		if($sess == FALSE && isset($this->EE->session) == TRUE)
+			$sess =& $this->EE->session;
+
+		// Set the settings in the cache
+		$sess->cache[$this->addon_name][__CLASS__]['settings'] = $settings;
+
+		// return the settings
 		return $settings;
 	}
 
 	/**
 	 * Sets up and subscribes to the hooks specified by the $hooks array.
-	 * @version		2.0.0
+	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		private
 	 * @param		array	$hooks	a flat array containing the names of any hooks that this extension subscribes to. By default, this parameter is set to FALSE.
