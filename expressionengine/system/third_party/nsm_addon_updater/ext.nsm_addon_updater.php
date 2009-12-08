@@ -47,7 +47,7 @@ class Nsm_addon_updater_ext
 {
 	public $addon_name = "NSM Addon Updater";
 	public $name = "NSM Addon Updater";
-	public $version = '1.0.0a2';
+	public $version = '1.0.0a3';
 	public $docs_url = "http://leevigraham.com/";
 	public $versions_xml = "https://github.com/newism/nsm.addon_updater.ee_addon/raw/master/expressionengine/system/third_party/nsm_addon_updater/versions.xml";
 
@@ -130,11 +130,18 @@ class Nsm_addon_updater_ext
 	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		public
+	 * @param 		$current string The new installed version number
 	 * @return		void
 	 **/
-	public function update_extension()
+	public function update_extension($current_version)
 	{
-		// no need for this yet
+		if ($current_version == '' OR $current_version == $this->version)
+			return FALSE;
+
+		// This seems so ugly, why can't we just use SQL?
+		$this->EE->db->where('class', __CLASS__);
+		$this->EE->db->update('exp_extensions', array("version" => $this->version)); 
+
 	}
 
 	/**
