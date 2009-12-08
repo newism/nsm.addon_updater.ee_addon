@@ -1,5 +1,5 @@
 <?php if($versions != FALSE) : ?>
-<p>The following addon updates are available</p>
+<h3>The following addon updates are available</h3>
 <table id="nsm_au_updates" class="mainTable" cellspacing="0">
 	<thead>
 		<tr>
@@ -45,5 +45,5 @@
 		<?php endforeach; ?>
 	</tbody>
 </table>
-<p>Installed Extensions</p>
+<h3>Installed Extensions</h3>
 <?php endif; ?>
