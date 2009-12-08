@@ -47,7 +47,7 @@ class Nsm_addon_updater_ext
 {
 	public $addon_name = "NSM Addon Updater";
 	public $name = "NSM Addon Updater";
-	public $version = '1.0.0a1';
+	public $version = '1.0.0a2';
 	public $docs_url = "http://leevigraham.com/";
 	public $versions_xml = "https://github.com/newism/nsm.addon_updater.ee_addon/raw/master/expressionengine/system/third_party/nsm_addon_updater/versions.xml";
 
@@ -60,6 +60,23 @@ class Nsm_addon_updater_ext
 
 	private $hooks = array("sessions_end");
 
+	// ====================================
+	// = Delegate & Constructor Functions =
+	// ====================================
+
+	/**
+	 * PHP5 constructor function.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		public
+	 * @param		array	$settings	an array of settings used to construct a new instance of this class.
+	 * @return 		void
+	 * 
+	 * Settings are not passed to the constructor for the following methods:
+	 *     - settings_form
+	 *     - activate_extension
+	 *     - update_extension
+	 **/
 	public function __construct($settings='')
 	{
 
@@ -69,7 +86,7 @@ class Nsm_addon_updater_ext
 		if(defined('SITE_ID') == FALSE)
 			define('SITE_ID', $this->EE->config->item("site_id"));
 
-		$this->settings = ($settings == FALSE) ? $this->get_settings() : $this->save_settings_to_session($settings);
+		$this->settings = ($settings == FALSE) ? $this->_getSettings() : $this->_saveSettingsToSession($settings);
 
 		if(
 			$this->EE->input->get('D') == 'cp'
@@ -83,22 +100,50 @@ class Nsm_addon_updater_ext
 
 	}
 
+	/**
+	 * Called by ExpressionEngine when the user activates the extension.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		public
+	 * @return		void
+	 **/
 	public function activate_extension()
 	{
-		$this->create_hooks();
+		$this->_createHooks();
 	}
 
+	/**
+	 * Called by ExpressionEngine when the user disables the extension.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		public
+	 * @return		void
+	 **/
 	public function disable_extension()
 	{
 		// Uncomment to delete settings during development
-		// $this->delete_hooks();
+		// $this->_deleteHooks();
 	}
 
+	/**
+	 * Called by ExpressionEngine when the user updates to a newer version of the extension.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		public
+	 * @return		void
+	 **/
 	public function update_extension()
 	{
 		// no need for this yet
 	}
 
+	/**
+	 * Prepares and loads the settings form for display in the ExpressionEngine control panel.
+	 * @version		2.0.0
+	 * @since		Version 1.0.0
+	 * @access		public
+	 * @return		void
+	 **/
 	public function settings_form()
 	{
 		$this->EE->lang->loadfile('nsm_addon_updater');
@@ -113,7 +158,7 @@ class Nsm_addon_updater_ext
 			$this->EE->form_validation->set_rules(__CLASS__.'[cache_expiration]', 'lang:cache_expiration_field', 'trim|required|integer');
 			if ($this->EE->form_validation->run())
 			{
-				$this->save_settings_to_db($new_settings);
+				$this->_saveSettingsToDB($new_settings);
 				$vars['message'] = $this->EE->lang->line('extension_settings_saved_success');
 			}
 		}
@@ -128,41 +173,20 @@ class Nsm_addon_updater_ext
 		return $this->EE->load->view(__CLASS__ . '/form_settings', $vars, TRUE);
 	}
 
-	private function get_settings($refresh = FALSE)
-	{
-		$settings = FALSE;
-		if(isset($this->EE->session->cache[$this->addon_name][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
-		{
-			$settings_query = $this->EE->db->select('settings')
-			                               ->where('enabled', 'y')
-			                               ->where('class', __CLASS__)
-			                               ->get('extensions', 1);
-			                               
-			if($settings_query->num_rows())
-			{
-				$settings = unserialize($settings_query->row()->settings);
-				$this->save_settings_to_session($settings);
-			}
-		}
-		else
-		{
-			$settings = $this->EE->session->cache[$this->addon_name][__CLASS__]['settings'];
-		}
-		return $settings;
-	}
 
-	protected function save_settings_to_db($settings)
-	{
-		$this->EE->db->where('class', __CLASS__)
-		             ->update('extensions', array('settings' => serialize($settings)));
-	}
+	// ==================
+	// = Hook Callbacks =
+	// ==================
 
-	protected function save_settings_to_session($settings)
-	{
-		$this->EE->session->cache[$this->addon_name][__CLASS__]['settings'] = $settings;
-		return $settings;
-	}
-
+	/**
+	 * This function is called by ExpressionEngine whenever the "sessions_start" hook is executed. It checks the current hostname to see if the first segment matches one of the languages stored in the user's language directory. If it doesn't find a matching host domain segment, it checks the URL to see if the first segment matches one of the languages stored in the user's language directory. If either of the preceding conditions are true, the language, language display name and the user-defined path to the languages directory are all set as global variables. These variables are accessed by the Nsm_multi_language plugin.
+	 * @version		2.0.0
+	 * @since		Version 1.0.0
+	 * @access		public
+	 * @param		object	&$sess	an object reference to the current session that the hook was called from.
+	 * @return		void
+	 * @see 		http://codeigniter.com/user_guide/general/hooks.html
+	 **/
 	public function sessions_end(&$sess)
 	{
 		if(
@@ -172,7 +196,7 @@ class Nsm_addon_updater_ext
 		{
 			$versions = FALSE;
 
-			if(!$feeds = $this->get_update_feeds())
+			if(!$feeds = $this->_updateFeeds())
 				die();
 
 			foreach ($feeds as $addon_id => $feed)
@@ -215,7 +239,79 @@ class Nsm_addon_updater_ext
 		}
 	}
 
-	private function create_hooks($hooks = FALSE)
+
+	// ===============================
+	// = Class and Private Functions =
+	// ===============================
+
+	/**
+	 * Saves the specified settings array to the database.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		protected
+	 * @param		array	$settings	an array of settings to save to the database.
+	 * @return		void
+	 **/
+	private function _getSettings($refresh = FALSE)
+	{
+		$settings = FALSE;
+		if(isset($this->EE->session->cache[$this->addon_name][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
+		{
+			$settings_query = $this->EE->db->select('settings')
+			                               ->where('enabled', 'y')
+			                               ->where('class', __CLASS__)
+			                               ->get('extensions', 1);
+			                               
+			if($settings_query->num_rows())
+			{
+				$settings = unserialize($settings_query->row()->settings);
+				$this->_saveSettingsToSession($settings);
+			}
+		}
+		else
+		{
+			$settings = $this->EE->session->cache[$this->addon_name][__CLASS__]['settings'];
+		}
+		return $settings;
+	}
+
+	/**
+	 * Saves the specified settings array to the database.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		protected
+	 * @param		array	$settings	an array of settings to save to the database.
+	 * @return		void
+	 **/
+	private function _saveSettingsToDB($settings)
+	{
+		$this->EE->db->where('class', __CLASS__)
+		             ->update('extensions', array('settings' => serialize($settings)));
+	}
+
+	/**
+	 * Saves the specified settings array to the session.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		protected
+	 * @param		array	$settings	an array of settings to save to the session.
+	 * @return		array		the provided settings array
+	 **/
+	private function _saveSettingsToSession($settings)
+	{
+		$this->EE->session->cache[$this->addon_name][__CLASS__]['settings'] = $settings;
+		return $settings;
+	}
+
+	/**
+	 * Sets up and subscribes to the hooks specified by the $hooks array.
+	 * @version		2.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @param		array	$hooks	a flat array containing the names of any hooks that this extension subscribes to. By default, this parameter is set to FALSE.
+	 * @return		void
+	 **/
+	private function _createHooks($hooks = FALSE)
 	{
 		if(!$hooks)
 			$hooks = $this->hooks;
@@ -245,13 +341,27 @@ class Nsm_addon_updater_ext
 		
 	}
 
-	private function delete_hooks()
+	/**
+	 * Removes all subscribed hooks for the current extension.
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @return		void
+	 **/
+	private function _deleteHooks()
 	{
 		$this->EE->db->where('class', __CLASS__)->delete('extensions');
 	}
 
-	private function get_update_feeds()
-	{	
+	/**
+	 * Loads all the feeds from the cache or new from the server
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @return		array An array of RSS feed XML
+	 **/
+	private function _updateFeeds()
+	{
 		require APPPATH . "third_party/nsm_addon_updater/libraries/Epicurl.php";
 		$sources = FALSE;
 		$feeds = FALSE;
@@ -260,7 +370,7 @@ class Nsm_addon_updater_ext
 		{
 			if(isset($addon->versions_xml))
 			{
-				if(!$xml = $this->get_cache($addon->versions_xml))
+				if(!$xml = $this->_readCache($addon->versions_xml))
 				{
 					$c = FALSE;
 					$c = curl_init($addon->versions_xml);
@@ -271,7 +381,7 @@ class Nsm_addon_updater_ext
 					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302")
 					{
 						$xml = $curls[$addon_id]->data;
-						$this->write_cache($xml, $addon->versions_xml);
+						$this->_createCacheFile($xml, $addon->versions_xml);
 					}
 				}
 				if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
@@ -283,10 +393,19 @@ class Nsm_addon_updater_ext
 		return $feeds;
 	}
 
-	private function write_cache($data, $url)
+	/**
+	 * Creates a cache file populated with data based on a URL
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @param		$data string The data we need to cache
+	 * @param		$url string A URL used as a unique identifier
+	 * @return		void
+	 **/
+	private function _createCacheFile($data, $url)
 	{
 		$path = $this->EE->config->item('cache_path');
-		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
+		$cache_path = ($path == '') ? APPPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
 
 		$filepath = $cache_path ."/". md5($url) . ".xml";
 
@@ -313,7 +432,15 @@ class Nsm_addon_updater_ext
 		log_message('debug', "Cache file written: " . $filepath);
 	}
 
-	private function get_cache($url)
+	/**
+	 * Reads data from a file cache
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @param		$url string A URL used as a unique identifier
+	 * @return		string The cached data
+	 **/
+	private function _readCache($url)
 	{
 		$path = $this->EE->config->item('cache_path');
 		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . "nsm_addon_updater".__CLASS__;
