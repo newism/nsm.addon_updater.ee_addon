@@ -32,5 +32,18 @@
 			</description>
 			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a2" length="13137" type="application/zip" />
 		 </item>
+		<item>
+			<title>Version 1.0.0a3</title>
+			<ee_addon:version>1.0.0a3</ee_addon:version>
+			<link>https://github.com/newism/nsm.addon_updater.ee_addon/</link>
+			<pubDate>Tuesday, 08 Dec 2009 20:01:00 +1000</pubDate>
+			<description><![CDATA[
+				<ul>
+					<li>Actually added the code to update the extension internally</li>
+				</ul>
+			]]>
+			</description>
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a2" length="13137" type="application/zip" />
+		 </item>
 	</channel>
 </rss>
