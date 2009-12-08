@@ -17,5 +17,20 @@
 			</description>
 			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a1" length="16384" type="application/zip" />
 		 </item>
+		<item>
+			<title>Version 1.0.0a2</title>
+			<ee_addon:version>1.0.0a2</ee_addon:version>
+			<link>https://github.com/newism/nsm.addon_updater.ee_addon/</link>
+			<pubDate>Tuesday, 08 Dec 2009 20:00:00 +1000</pubDate>
+			<description><![CDATA[
+				<ul>
+					<li>Updated a bunch of private methods to camelCase. This should help distinguish EE and custom methods</li>
+					<li>Lots of comments in the code</li>
+					<li>A quick update so everyone sees the addon in action</li>
+				</ul>
+			]]>
+			</description>
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a2" length="16384" type="application/zip" />
+		 </item>
 	</channel>
 </rss>
