@@ -48,7 +48,7 @@ class Nsm_addon_updater_ext
 	public $addon_name = "NSM Addon Updater";
 	public $name = "NSM Addon Updater";
 	public $version = '1.0.0a2';
-	public $docs_url = "http://leevigraham.com/";
+	public $docs_url = "";
 	public $versions_xml = "https://github.com/newism/nsm.addon_updater.ee_addon/raw/master/expressionengine/system/third_party/nsm_addon_updater/versions.xml";
 
 	public $settings_exist = "y";
