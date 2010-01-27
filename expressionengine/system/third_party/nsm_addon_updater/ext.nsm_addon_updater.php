@@ -431,7 +431,7 @@ class Nsm_addon_updater_ext
 	private function _createCacheFile($data, $url)
 	{
 		$path = $this->EE->config->item('cache_path');
-		$cache_path = ($path == '') ? APPPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
+		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . __CLASS__;
 
 		$filepath = $cache_path ."/". md5($url) . ".xml";
 
