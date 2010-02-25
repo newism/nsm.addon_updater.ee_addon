@@ -1,5 +1,5 @@
-NSM Addon Updater 1.0.0a1
-=========================
+NSM Addon Updater
+=================
 
 Written by: Leevi Graham, Technical Director of Newism, based on LG Addon Updater (EE1.x)
 
