@@ -5,32 +5,18 @@
 		<link>https://github.com/newism/nsm.addon_updater.ee_addon/versions.xml</link>
 		<description>Most recent changes with links to updates.</description>
 		<item>
-			<title>Version 1.0.0a1</title>
-			<ee_addon:version>3.0.0</ee_addon:version>
-			<link>https://github.com/newism/nsm.addon_updater.ee_addon//tree/1.0.0a1</link>
-			<pubDate>Thursday, 01 Dec 2009 00:37:00 +1000</pubDate>
+			<title>Version 0.1.0</title>
+			<ee_addon:version>0.1.0</ee_addon:version>
+			<link>https://github.com/newism/nsm.addon_updater.ee_addon//tree/0.1.0</link>
+			<pubDate>Thursday, 25 Feb 2010 11:55:00 +1100</pubDate>
 			<description><![CDATA[
 				<ul>
-					<li>Initial release</li>
+					<li>Complete rewrite as an accessory.</li>
+					<li>Remove the whole <code>third_party/nsm_addon_updater</code> folder before updating.</li>
 				</ul>
 			]]>
 			</description>
-			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a1" length="16384" type="application/zip" />
-		 </item>
-		<item>
-			<title>Version 1.0.0a2</title>
-			<ee_addon:version>1.0.0a2</ee_addon:version>
-			<link>https://github.com/newism/nsm.addon_updater.ee_addon//tree/1.0.0a2</link>
-			<pubDate>Tuesday, 08 Dec 2009 20:00:00 +1000</pubDate>
-			<description><![CDATA[
-				<ul>
-					<li>Updated a bunch of private methods to camelCase. This should help distinguish EE and custom methods</li>
-					<li>Lots of comments in the code</li>
-					<li>A quick update so everyone sees the addon in action</li>
-				</ul>
-			]]>
-			</description>
-			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0a2" length="13137" type="application/zip" />
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/0.1.0" length="" type="application/zip" />
 		 </item>
 	</channel>
 </rss>
