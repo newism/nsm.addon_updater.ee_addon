@@ -28,14 +28,30 @@
 				<?php endif; ?>
 			</td>
 			<td>
-				<?php if ($version['download']) : ?>
-					<a href="<?php print $version['download']['url']; ?>" rel="external">Direct download</a>
-				<?php endif; ?>
+				<?php
+					if(method_exists($version['extension_class'], 'nsm_addon_updater_download_url'))
+					{
+						$url = call_user_func(array($version['extension_class'], 'nsm_addon_updater_download_url'), $version);
+					}
+					elseif(isset($version['download']))
+					{
+						$url = $version['download']['url'];
+					}
+					else
+					{
+						$url = false;
+					}
+					
+					if($url !== false)
+						echo "<a href=\"{$url}\" rel=\"external\">Download</a>";
+					else
+						echo "&nbsp;";
+				?>
 			</td>
 		</tr>
 		<?php if ($version['notes']) : ?>
 		<tr class="<?=$class?>" style="display:none">
-			<td colspan="5">
+			<td colspan="6">
 				<h2><?php print $version['title']; ?></h2>
 				<p>Published: <?php print $version['created_at']; ?></p>
 				<?php print $version['notes']; ?>
@@ -45,5 +61,14 @@
 		<?php endforeach; ?>
 	</tbody>
 </table>
-<h3>Installed Extensions</h3>
+
+<?php else: ?>
+
+
+<p>All extensions are up-to-date</p>
+
 <?php endif; ?>
+
+
+
+<h3>Installed Extensions</h3>
