@@ -117,7 +117,14 @@ class Nsm_addon_updater_ext
 	 * @see			http://codeigniter.com/user_guide/general/hooks.html
 	 **/
  	private $hooks = array('sessions_end');
-
+	
+	/**
+	 * Default settings for the extension
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		private
+	 * @var			array	An array of settings
+	 */
 	private $default_settings = array
 	(
 		'enabled' 				=> TRUE,
@@ -144,29 +151,47 @@ class Nsm_addon_updater_ext
 	 **/
 	public function __construct($settings='')
 	{
-		$this->EE =& get_instance();
+		$EE =& get_instance();
 
 		// define a constant for the current site_id rather than calling $PREFS->ini() all the time
-		if(!defined('SITE_ID')) define('SITE_ID', $this->EE->config->item("site_id"));
+		if(!defined('SITE_ID')) define('SITE_ID', $EE->config->item("site_id"));
 		
 		// Set the member vars for EE
 		$this->name 		= self::name();
 		$this->description 	= self::description();
 		$this->version 		= self::version();
 
-		$this->settings = ($settings == FALSE) ? $this->_getSettings() : $this->_saveSettingsToSession($settings);
-		
+		if($settings == false)
+		{
+			// get the settings from our custom settings DB
+			$this->settings = $this->_getSettings($EE);
+		}
+		else
+		{	
+			// Save the settings to the session
+			$this->settings = $this->_saveSettingsToSession($EE,$settings);
+		}
+
 		if(
-			$this->EE->input->get('D') == 'cp'
-			&& $this->EE->input->get('C') == 'addons_extensions'
-			&& isset($this->EE->cp)
-			&& isset($this->settings['member_groups'][$this->EE->session->userdata['group_id']]['show_notification'])
-			&& $this->EE->input->get('M') == false
+			// In the control panel
+			$EE->input->get('D') == 'cp'
+			
+			// In the extensions area
+			&& $EE->input->get('C') == 'addons_extensions'
+			
+			// Control Panel object is initialized
+			&& isset($EE->cp)
+			
+			// This member group can see update notifications
+			&& isset($this->settings['member_groups'][$EE->session->userdata['group_id']]['show_notification'])
+			
+			// Not viewing a single extension
+			&& $EE->input->get('M') == false
 		)
 		{
-			// Can't use load_package_js as $this->EE->load->_ci_view_path isn't set yet which breaks the path
+			// Can't use load_package_js as $EE->load->_ci_view_path isn't set yet which breaks the path
 			$script_url = BASE . '&amp;C=javascript&amp;M=load&amp;package=nsm_addon_updater&amp;file=display_update_notifications';
-			$this->EE->cp->add_to_foot("<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>");
+			$EE->cp->add_to_foot("<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>");
 		}
 	}
 	
@@ -231,7 +256,8 @@ class Nsm_addon_updater_ext
 	 **/
 	public function activate_extension()
 	{
-		$this->_createHooks();
+		$EE =& get_instance();
+		$this->_createHooks($EE);
 	}
 
 	/**
@@ -243,7 +269,8 @@ class Nsm_addon_updater_ext
 	 **/
 	public function disable_extension()
 	{
-
+		$EE =& get_instance();
+		$this->_unregisterHooks($EE);
 	}
 
 	/**
@@ -256,12 +283,13 @@ class Nsm_addon_updater_ext
 	 **/
 	public function update_extension($current_version)
 	{
-		if ($current_version == '' OR $current_version == $this->version)
+		$EE =& get_instance();
+		if ($current_version == '' OR $current_version == self::version())
 			return FALSE;
 
 		// This seems so ugly, why can't we just use SQL?
-		$this->EE->db->where('class', __CLASS__);
-		$this->EE->db->update('exp_extensions', array("version" => $this->version)); 
+		$EE->db->where('class', __CLASS__);
+		$EE->db->update('exp_extensions', array("version" => self::version())); 
 
 	}
 
@@ -274,31 +302,33 @@ class Nsm_addon_updater_ext
 	 **/
 	public function settings_form()
 	{
-		$this->EE->lang->loadfile('nsm_addon_updater');
-		$this->EE->load->library('form_validation');
+		$EE =& get_instance();
+
+		$EE->lang->loadfile('nsm_addon_updater');
+		$EE->load->library('form_validation');
 
 		$vars['settings'] = $this->settings;
 		$vars['message'] = FALSE;
 
-		if($new_settings = $this->EE->input->post(__CLASS__))
+		if($new_settings = $EE->input->post(__CLASS__))
 		{
 			$vars['settings'] = $new_settings;
-			$this->EE->form_validation->set_rules(__CLASS__.'[cache_expiration]', 'lang:cache_expiration_field', 'trim|required|integer');
-			if ($this->EE->form_validation->run())
+			$EE->form_validation->set_rules(__CLASS__.'[cache_expiration]', 'lang:cache_expiration_field', 'trim|required|integer');
+			if ($EE->form_validation->run())
 			{
-				$this->_saveSettingsToDB($new_settings);
-				$vars['message'] = $this->EE->lang->line('extension_settings_saved_success');
+				$this->_saveSettingsToDB($EE,$new_settings);
+				$vars['message'] = $EE->lang->line('extension_settings_saved_success');
 			}
 		}
 
-		$vars['member_groups'] = $this->EE->db->select('group_id, group_title')
+		$vars['member_groups'] = $EE->db->select('group_id, group_title')
 		                            ->where('site_id', SITE_ID)
 		                            ->order_by('group_title')
 		                            ->get('member_groups')
 									->result_array();
 
-		$vars['addon_name'] = $this->addon_name;
-		return $this->EE->load->view('form_settings', $vars, TRUE);
+		$vars['addon_name'] = self::name();
+		return $EE->load->view('form_settings', $vars, TRUE);
 	}
 
 
@@ -317,16 +347,18 @@ class Nsm_addon_updater_ext
 	 **/
 	public function sessions_end(&$sess)
 	{
-		$this->_saveSettingsToSession($this->settings, $sess);
+		$EE =& get_instance();
+		
+		$this->_saveSettingsToSession($EE,$this->settings);
 
 		if(
-			$this->EE->input->get('nsm_addon_updater') == TRUE
+			$EE->input->get('nsm_addon_updater') == TRUE
 			&& isset($this->settings['member_groups'][$sess->userdata['group_id']]['show_notification'])
 		)
 		{
 			$versions = FALSE;
 
-			if(!$feeds = $this->_updateFeeds())
+			if(!$feeds = $this->_updateFeeds($EE))
 				die();
 
 			foreach ($feeds as $addon_id => $feed)
@@ -339,14 +371,14 @@ class Nsm_addon_updater_ext
 
 					$version_number = (string)$ee_addon->version;
 					if(
-						version_compare($version_number, $this->EE->extensions->OBJ[$addon_id]->version, '>')
+						version_compare($version_number, $EE->extensions->OBJ[$addon_id]->version, '>')
 						&& version_compare($version_number, $latest_version, '>')
 					)
 					{
 						$latest_version = $version_number;
 
-						$versions[$addon_id]['addon_name'] = $this->EE->extensions->OBJ[$addon_id]->name;
-						$versions[$addon_id]['installed_version'] = $this->EE->extensions->OBJ[$addon_id]->version;
+						$versions[$addon_id]['addon_name'] = $EE->extensions->OBJ[$addon_id]->name;
+						$versions[$addon_id]['installed_version'] = $EE->extensions->OBJ[$addon_id]->version;
 
 						$versions[$addon_id]['title'] = (string)$version->title;
 						$versions[$addon_id]['latest_version'] = $version_number;
@@ -365,9 +397,10 @@ class Nsm_addon_updater_ext
 					}
 				}
 			}
+
 			// Package path isn't loaded yet, so this won't work
-			//print($this->EE->load->view("updates", array('versions' => $versions), TRUE));
-			print($this->EE->load->view("../third_party/nsm_addon_updater/views/updates", array('versions' => $versions), TRUE));
+			//print($EE->load->view("updates", array('versions' => $versions), TRUE));
+			print($EE->load->view("../third_party/nsm_addon_updater/views/updates", array('versions' => $versions), TRUE));
 			die();
 		}
 	}
@@ -396,12 +429,12 @@ class Nsm_addon_updater_ext
 	 * @param		array	$settings	an array of settings to save to the database.
 	 * @return		void
 	 **/
-	private function _getSettings($refresh = FALSE)
+	private function _getSettings($EE,$refresh = FALSE)
 	{
 		$settings = FALSE;
-		if(isset($this->EE->session->cache[$this->addon_name][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
+		if(isset($EE->session->cache[self::name()][__CLASS__]['settings']) === FALSE || $refresh === TRUE)
 		{
-			$settings_query = $this->EE->db->select('settings')
+			$settings_query = $EE->db->select('settings')
 			                               ->where('enabled', 'y')
 			                               ->where('class', __CLASS__)
 			                               ->get('extensions', 1);
@@ -409,12 +442,12 @@ class Nsm_addon_updater_ext
 			if($settings_query->num_rows())
 			{
 				$settings = unserialize($settings_query->row()->settings);
-				$this->_saveSettingsToSession($settings);
+				$this->_saveSettingsToSession($EE,$settings);
 			}
 		}
 		else
 		{
-			$settings = $this->EE->session->cache[$this->addon_name][__CLASS__]['settings'];
+			$settings = $EE->session->cache[self::name()][__CLASS__]['settings'];
 		}
 		return $settings;
 	}
@@ -427,10 +460,11 @@ class Nsm_addon_updater_ext
 	 * @param		array	$settings	an array of settings to save to the database.
 	 * @return		void
 	 **/
-	private function _saveSettingsToDB($settings)
+	private function _saveSettingsToDB($EE,$settings)
 	{
-		$this->EE->db->where('class', __CLASS__)
+		$EE->db->where('class', __CLASS__)
 		             ->update('extensions', array('settings' => serialize($settings)));
+		unset($EE);
 	}
 
 	/**
@@ -442,18 +476,14 @@ class Nsm_addon_updater_ext
 	 * @param		array		$sess		A session object
 	 * @return		array		the provided settings array
 	 **/
-	private function _saveSettingsToSession($settings, &$sess = FALSE)
+	private function _saveSettingsToSession($EE, $settings)
 	{
 		// if there is no $sess passed and EE's session is not instaniated
-		if($sess == FALSE && isset($this->EE->session->cache) == FALSE)
+		if(isset($EE->session->cache) == FALSE)
 			return $settings;
 
-		// if there is an EE session available and there is no custom session object
-		if($sess == FALSE && isset($this->EE->session) == TRUE)
-			$sess =& $this->EE->session;
-
 		// Set the settings in the cache
-		$sess->cache[$this->addon_name][__CLASS__]['settings'] = $settings;
+		$EE->session->cache[self::name()][__CLASS__]['settings'] = $settings;
 
 		// return the settings
 		return $settings;
@@ -467,15 +497,16 @@ class Nsm_addon_updater_ext
 	 * @param		array	$hooks	a flat array containing the names of any hooks that this extension subscribes to. By default, this parameter is set to FALSE.
 	 * @return		void
 	 **/
-	private function _createHooks($hooks = FALSE)
+	private function _createHooks($EE,$hooks = FALSE)
 	{
 		if(!$hooks)
 			$hooks = $this->hooks;
 
-		$hook_template = array(
+		$hook_template = array
+		(
 			'class'    => __CLASS__,
 			'settings' => $this->default_settings,
-			'version'  => $this->version,
+			'version'  => self::version(),
 		);
 
 		foreach($hooks as $key => $hook)
@@ -492,7 +523,7 @@ class Nsm_addon_updater_ext
 			}
 			$hook = array_merge($hook_template, $data);
 			$hook['settings'] = serialize($hook['settings']);
-			$this->EE->db->insert('extensions', $hook);
+			$EE->db->insert('extensions', $hook);
 		}
 		
 	}
@@ -504,9 +535,9 @@ class Nsm_addon_updater_ext
 	 * @access		private
 	 * @return		void
 	 **/
-	private function _deleteHooks()
+	private function _unregisterHooks($EE)
 	{
-		$this->EE->db->where('class', __CLASS__)->delete('extensions');
+		$EE->db->where('class', __CLASS__)->delete('extensions');
 	}
 
 	/**
@@ -516,17 +547,17 @@ class Nsm_addon_updater_ext
 	 * @access		private
 	 * @return		array An array of RSS feed XML
 	 **/
-	private function _updateFeeds()
+	private function _updateFeeds($EE)
 	{
 		require APPPATH . "third_party/nsm_addon_updater/libraries/Epicurl.php";
 		$sources = FALSE;
 		$feeds = FALSE;
 		$mc = EpiCurl::getInstance();
-		foreach ($this->EE->extensions->OBJ as $addon_id => $addon)
+		foreach ($EE->extensions->OBJ as $addon_id => $addon)
 		{
 			if(isset($addon->versions_xml))
 			{
-				if(!$xml = $this->_readCache($addon->versions_xml))
+				if(!$xml = $this->_readCache($addon->versions_xml, $EE->config->item('cache_path')))
 				{
 					$c = FALSE;
 					$c = curl_init($addon->versions_xml);
@@ -537,7 +568,7 @@ class Nsm_addon_updater_ext
 					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302")
 					{
 						$xml = $curls[$addon_id]->data;
-						$this->_createCacheFile($xml, $addon->versions_xml);
+						$this->_createCacheFile($xml, $addon->versions_xml, $EE->config->item('cache_path'));
 					}
 				}
 				if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
@@ -558,11 +589,9 @@ class Nsm_addon_updater_ext
 	 * @param		$url string A URL used as a unique identifier
 	 * @return		void
 	 **/
-	private function _createCacheFile($data, $url)
+	private function _createCacheFile($data, $url, $path)
 	{
-		$path = $this->EE->config->item('cache_path');
 		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . __CLASS__;
-
 		$filepath = $cache_path ."/". md5($url) . ".xml";
 
 		if (! is_dir($cache_path))
@@ -596,9 +625,8 @@ class Nsm_addon_updater_ext
 	 * @param		$url string A URL used as a unique identifier
 	 * @return		string The cached data
 	 **/
-	private function _readCache($url)
+	private function _readCache($url,$path)
 	{
-		$path = $this->EE->config->item('cache_path');
 		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . "nsm_addon_updater".__CLASS__;
 		$filepath = $cache_path ."/". md5($url) . ".xml";
 
@@ -625,5 +653,4 @@ class Nsm_addon_updater_ext
 
 		return $cache;
 	}
-
-} // END class Nsm_addon_updater_ext
+}
