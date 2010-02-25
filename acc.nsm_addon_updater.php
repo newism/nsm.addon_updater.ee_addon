@@ -20,51 +20,58 @@ class Nsm_addon_updater_acc
 	function set_sections()
 	{
 		$EE =& get_instance();
-		
-		$feeds = $this->_updateFeeds($EE);
+		$versions = FALSE;
 
-		foreach ($feeds as $addon_id => $feed)
+		if($feeds = $this->_updateFeeds($EE))
 		{
-			$namespaces = $feed->getNameSpaces(true);
-			$latest_version = 0;
-			foreach ($feed->channel->item as $version)
+			foreach ($feeds as $addon_id => $feed)
 			{
-				$ee_addon = $version->children($namespaces['ee_addon']);
+				$namespaces = $feed->getNameSpaces(true);
+				$latest_version = 0;
 
-				$version_number = (string)$ee_addon->version;
-				
 				include PATH_THIRD . '/' . $addon_id . '/config.php';
-				
-				if(version_compare($version_number, $config['version'], '>') && version_compare($version_number, $latest_version, '>') )
+
+				foreach ($feed->channel->item as $version)
 				{
-					$latest_version = $version_number;
+					$ee_addon = $version->children($namespaces['ee_addon']);
+					$version_number = (string)$ee_addon->version;
 
-					$versions[$addon_id]['addon_name'] 			= $config['name'];
-					$versions[$addon_id]['installed_version'] 	= $config['version'];
-
-					$versions[$addon_id]['title'] 				= (string)$version->title;
-					$versions[$addon_id]['latest_version'] 		= $version_number;
-					$versions[$addon_id]['notes'] 				= (string)$version->description;
-					$versions[$addon_id]['docs_url'] 			= (string)$version->link;
-					$versions[$addon_id]['download'] 			= FALSE;
-					$versions[$addon_id]['created_at'] 			= $version->pubDate;
-					$versions[$addon_id]['extension_class'] 	= $addon_id;
-										
-					if($version->enclosure)
+					if(version_compare($version_number, $config['version'], '>') && version_compare($version_number, $latest_version, '>') )
 					{
-						$versions[$addon_id]['download']['url'] = (string)$version->enclosure['url'];
-						$versions[$addon_id]['download']['type'] = (string)$version->enclosure['type'];
-						$versions[$addon_id]['download']['size'] = (string)$version->enclosure['length'];
-						
-						if(isset($config['nsm_addon_updater']['custom_download_url']))
+						$versions[$addon_id] = array(
+							'addon_name' 		=> $config['name'],
+							'installed_version' => $config['version'],
+							'title' 			=> (string)$version->title,
+							'latest_version' 	=> $version_number,
+							'notes' 			=> (string)$version->description,
+							'docs_url' 			=> (string)$version->link,
+							'download' 			=> FALSE,
+							'created_at'		=> $version->pubDate,
+							'extension_class' 	=> $addon_id
+						);
+
+						if($version->enclosure)
 						{
-							$versions[$addon_id]['download']['url'] = call_user_func($config['nsm_addon_updater']['custom_download_url'], $versions[$addon_id]);
+							$versions[$addon_id]['download'] = array(
+								'url' => (string)$version->enclosure['url'],
+								'type' =>  (string)$version->enclosure['type'],
+								'size' => (string)$version->enclosure['length']
+							);
+
+							if(isset($config['nsm_addon_updater']['custom_download_url']))
+							{
+								$versions[$addon_id]['download']['url'] = call_user_func($config['nsm_addon_updater']['custom_download_url'], $versions[$addon_id]);
+							}
 						}
 					}
 				}
 			}
 		}
-		
+		$EE->cp->load_package_js("accessory_tab");
+		$EE->cp->load_package_css("accessory_tab");
+		// $script_url = BASE . '&amp;C=javascript&amp;M=load&amp;package=nsm_addon_updater&amp;file=update_notifications';
+		// $EE->cp->add_to_foot("<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>");
+
 		$this->sections['Available Updates'] = $EE->load->view("updates", array('versions' => $versions), TRUE); 
 	}
 	
