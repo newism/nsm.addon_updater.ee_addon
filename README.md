@@ -1,7 +1,7 @@
 NSM Addon Updater
 =================
 
-Written by: [Leevi Graham][http://twitter.com/leevigraham], Technical Director of [Newism][http://newism.com.au] and [Anthony Short][http://twitter.com/anthonyshort] based on LG Addon Updater (EE1.x)
+Written by: [Leevi Graham](http://twitter.com/leevigraham), Technical Director of [Newism](http://newism.com.au) and [Anthony Short](http://twitter.com/anthonyshort) based on LG Addon Updater (EE1.x)
 
 NSM Addon Updater is an EE 2.0 accessory that checks an external RSS feed for version updates and displays them in your extension admin.
 
@@ -45,4 +45,4 @@ Example RSS 2.0 XML Feed
 Acknowledgements:
 -----------------
 
-Accessory approach born from discussions with [@jamierumbelow][http://twitter.com/jamierumbelow]
+Accessory approach born from discussions with [@jamierumbelow](http://twitter.com/jamierumbelow)
