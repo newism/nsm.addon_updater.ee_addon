@@ -2,7 +2,7 @@
 
 class Nsm_addon_updater_acc 
 {
-	var $name	 		= 'NSM Addon Updater';
+	var $name	 		= 'NSM Add-on Updater';
 	var $id	 			= 'nsm_addon_updater';
 	var $version	 	= '1.0';
 	var $description	= 'Accessory for NSM Addon Updater.';
@@ -66,8 +66,6 @@ class Nsm_addon_updater_acc
 		}
 		
 		$this->sections['Available Updates'] = $EE->load->view("updates", array('versions' => $versions), TRUE); 
-		$this->sections['Featured Addons'] = '';
-		$this->sections['New Addons'] = '';
 	}
 	
 	// =======================
