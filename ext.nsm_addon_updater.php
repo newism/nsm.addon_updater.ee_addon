@@ -45,20 +45,85 @@
  **/
 class Nsm_addon_updater_ext
 {
-	public $addon_name = "NSM Addon Updater";
-	public $name = "NSM Addon Updater";
-	public $version = '1.0.0a2';
-	public $docs_url = "";
-	public $versions_xml = "https://github.com/newism/nsm.addon_updater.ee_addon/raw/master/expressionengine/system/third_party/nsm_addon_updater/versions.xml";
+	/**
+	 * Unique identifier to be used for loading settings and the like.
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		protected
+	 * @var			string
+	 **/
+	protected static $addon_id = 'nsm_live_look';
 
-	public $settings_exist = "y";
-	private $default_settings = array(
-		'enabled' => TRUE,
-		'cache_expiration' => 1,
-		'member_groups' => array(1 => array('show_notification' => TRUE))
+	/**
+	 * Display name for this extension.
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		protected
+	 * @var			string
+	 **/
+	protected static $addon_name = 'NSM Addon Updater';
+	
+	/**
+	 * Description for this extension
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		protected
+	 * @var 		string
+	 */
+	protected static $addon_description = 'Allows you to preview an entry within a publish tab';
+	
+	/**
+	 * Version number of this extension. Should be in the format "x.x.x", with only integers used.	EE use.
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		protected
+	 * @var 		string
+	 */
+	public static $addon_version = '1.0.0a2';
+
+	/**
+	 * Link to documentation for this extension. EE use.
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		public
+	 * @var			string
+	 **/
+	public $docs_url = 'http://newism.com.au/live-look/';
+
+	/**
+	 * The XML auto-update URL for LG Auto Updater.
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		public
+	 * @var			string
+	 **/
+	public $versions_xml = 'http://github.com/newism/nsm.live_look.ee_addon/raw/master/versions.xml';
+	
+	/**
+	 * Defines whether the extension has user-configurable settings.  EE use.
+	 * @version		1.0.0
+	 * @since		0.1.0
+	 * @access		public
+	 * @var			string
+	 **/
+	public $settings_exist = 'y';
+
+	/**
+	 * Defines the ExpressionEngine hooks that this extension will intercept.
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access		private
+	 * @var			mixed	an array of strings that name defined hooks
+	 * @see			http://codeigniter.com/user_guide/general/hooks.html
+	 **/
+ 	private $hooks = array('sessions_end');
+
+	private $default_settings = array
+	(
+		'enabled' 				=> TRUE,
+		'cache_expiration' 		=> 1,
+		'member_groups' 		=> array(1 => array('show_notification' => TRUE))
 	);
-
-	private $hooks = array("sessions_end");
 
 	// ====================================
 	// = Delegate & Constructor Functions =
@@ -79,30 +144,82 @@ class Nsm_addon_updater_ext
 	 **/
 	public function __construct($settings='')
 	{
-
 		$this->EE =& get_instance();
 
 		// define a constant for the current site_id rather than calling $PREFS->ini() all the time
-		if(defined('SITE_ID') == FALSE)
-			define('SITE_ID', $this->EE->config->item("site_id"));
+		if(!defined('SITE_ID')) define('SITE_ID', $this->EE->config->item("site_id"));
+		
+		// Set the member vars for EE
+		$this->name 		= self::name();
+		$this->description 	= self::description();
+		$this->version 		= self::version();
 
-		// I'm not really sure about this
-		// the idea is that when there are settings (hooks) we just push the settings to the session for other classes to use
-		// otherwise we get the settings from the DB. This could be bad because each hook can apparently have it's own settings although this is unlikely
-		// There is one other issue, if the hook being called is sessions_start or sessions_end there is no session yet :(
-		// In that case we push the settings to the object manually in the method
 		$this->settings = ($settings == FALSE) ? $this->_getSettings() : $this->_saveSettingsToSession($settings);
-
+		
 		if(
 			$this->EE->input->get('D') == 'cp'
 			&& $this->EE->input->get('C') == 'addons_extensions'
 			&& isset($this->EE->cp)
-			&& isset($this->settings['member_groups'][$this->EE->session->userdata['group_id']]['show_notification']))
+			&& isset($this->settings['member_groups'][$this->EE->session->userdata['group_id']]['show_notification'])
+			&& $this->EE->input->get('M') == false
+		)
 		{
-			$script_url = $this->EE->config->system_url() . "expressionengine/third_party/nsm_addon_updater/javascript/display_update_notifications.js";
+			// Can't use load_package_js as $this->EE->load->_ci_view_path isn't set yet which breaks the path
+			$script_url = BASE . '&amp;C=javascript&amp;M=load&amp;package=nsm_addon_updater&amp;file=display_update_notifications';
 			$this->EE->cp->add_to_foot("<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>");
 		}
-
+	}
+	
+	// ======================
+	// = Accessor Functions =
+	// ======================
+	
+	/**
+	 * Returns the name of this addon
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access 		public
+	 * @return 		$string	The name of the addon
+	 **/
+	public static function name()
+	{
+		return self::$addon_name;
+	}
+	
+	/**
+	 * Returns the description of this addon
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access 		public
+	 * @return 		$string	The description of the addon
+	 **/
+	public static function description()
+	{
+		return self::$addon_description;
+	}
+	
+	/**
+	 * Returns the id of this addon
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access 		public
+	 * @return 		$string	The ID of the addon
+	 **/
+	public static function id()
+	{
+		return self::$addon_id;
+	}
+	
+	/**
+	 * Returns the version of this addon
+	 * @version		0.1.0
+	 * @since		0.1.0
+	 * @access 		public
+	 * @return 		$string	The ID of the addon
+	 **/
+	public static function version()
+	{
+		return self::$addon_version;
 	}
 
 	/**
@@ -126,8 +243,7 @@ class Nsm_addon_updater_ext
 	 **/
 	public function disable_extension()
 	{
-		// Uncomment to delete settings during development
-		// $this->_deleteHooks();
+
 	}
 
 	/**
@@ -182,7 +298,7 @@ class Nsm_addon_updater_ext
 									->result_array();
 
 		$vars['addon_name'] = $this->addon_name;
-		return $this->EE->load->view(__CLASS__ . '/form_settings', $vars, TRUE);
+		return $this->EE->load->view('form_settings', $vars, TRUE);
 	}
 
 
@@ -238,7 +354,8 @@ class Nsm_addon_updater_ext
 						$versions[$addon_id]['docs_url'] = (string)$version->link;
 						$versions[$addon_id]['download'] = FALSE;
 						$versions[$addon_id]['created_at'] = $version->pubDate;
-
+						$versions[$addon_id]['extension_class'] = $addon_id;
+						
 						if($version->enclosure)
 						{
 							$versions[$addon_id]['download']['url'] = (string)$version->enclosure['url'];
@@ -248,9 +365,22 @@ class Nsm_addon_updater_ext
 					}
 				}
 			}
-			print($this->EE->load->view("../third_party/nsm_addon_updater/views/Nsm_addon_updater_ext/updates", array('versions' => $versions), TRUE));
+			// Package path isn't loaded yet, so this won't work
+			//print($this->EE->load->view("updates", array('versions' => $versions), TRUE));
+			print($this->EE->load->view("../third_party/nsm_addon_updater/views/updates", array('versions' => $versions), TRUE));
 			die();
 		}
+	}
+	
+	/**
+	 * Rewrites the download URL
+	 *
+	 * @param $info
+	 * @return string
+	 */
+	public static function nsm_addon_updater_download_url($versions)
+	{
+		return $versions["download"]["url"];
 	}
 
 
