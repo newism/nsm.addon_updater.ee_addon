@@ -8,7 +8,7 @@
 			<title>Version 0.1.0</title>
 			<ee_addon:version>0.1.0</ee_addon:version>
 			<link>https://github.com/newism/nsm.addon_updater.ee_addon//tree/0.1.0</link>
-			<pubDate>Thursday, 25 Feb 2010 11:55:00 +1100</pubDate>
+			<pubDate>Fri, 26 Feb 2010 00:20:00 +1100</pubDate>
 			<description><![CDATA[
 				<ul>
 					<li>Complete rewrite as an accessory.</li>
@@ -16,7 +16,7 @@
 				</ul>
 			]]>
 			</description>
-			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/0.1.0" length="" type="application/zip" />
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/0.1.0" length="10199" type="application/zip" />
 		 </item>
 	</channel>
 </rss>
