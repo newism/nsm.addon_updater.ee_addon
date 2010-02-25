@@ -1,0 +1,44 @@
+#accessoryTabs .nsm_addon_updater{
+	padding-right:0;
+	position:relative;
+}
+#accessoryTabs .nsm_addon_updater .accessoryHandle{display:none;}
+#accessoryTabs .nsm_addon_updater span.badge{
+	background:rgb(231, 23, 75);
+	_background:-webkit-gradient(radial, 50% 50%, 0, 50% 50%, 9, from(#ed1c24), to(#ba161c));
+	border:1px solid #b5123b;
+	border-radius:30px;
+	font-weight:bold;
+	-moz-border-radius:30px;
+	-webkit-border-radius:30px;
+	color:#fff;
+	font-size:10px;
+	line-height:10px;
+	text-align:center;
+	padding:4px;
+	position:absolute; top:-12px; right:-20px;
+	min-width:10px;
+	text-shadow: 0 -1px 0 #b5123b;
+	
+}
+
+#nsm_addon_updater.accessory h2{font-size:14px;}
+#nsm_addon_updater.accessory p{margin:1.5em 0;}
+#nsm_addon_updater.accessory ul{list-style-type:disc; margin-left:18px;}
+#nsm_addon_updater.accessory ul li{margin:0; padding:0;}
+#nsm_addon_updater.accessory table{
+	border: 1px solid #293740;
+	border-collapse:collapse;
+	padding:0;
+}
+#nsm_addon_updater.accessory table thead th{background:rgba(0,0,0,.2);  font-size:12px;}
+#nsm_addon_updater.accessory table tr.odd{background:rgba(255,255,255,.05);}
+#nsm_addon_updater.accessory table tbody th{color:#f2f2f2;}
+#nsm_addon_updater.accessory table th, 
+#nsm_addon_updater.accessory table td{
+	border: 1px solid #293740;
+	font-size:11px;
+	margin:0;
+	padding:5px 10px;
+	text-align:left;
+}
