@@ -41,3 +41,8 @@ Example RSS 2.0 XML Feed
 			 </item>
 		</channel>
 	</rss>
+
+Acknowledgements:
+-----------------
+
+Accessory approach born from discussions with [@jamierumbelow][http://twitter.com/jamierumbelow]
