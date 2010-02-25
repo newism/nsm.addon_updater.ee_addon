@@ -1,5 +1,4 @@
 <?php if($versions != FALSE) : ?>
-<h3>The following addon updates are available</h3>
 <table id="nsm_au_updates" class="mainTable" cellspacing="0">
 	<thead>
 		<tr>
@@ -28,25 +27,9 @@
 				<?php endif; ?>
 			</td>
 			<td>
-				<?php
-					if(method_exists($version['extension_class'], 'nsm_addon_updater_download_url'))
-					{
-						$url = call_user_func(array($version['extension_class'], 'nsm_addon_updater_download_url'), $version);
-					}
-					elseif(isset($version['download']))
-					{
-						$url = $version['download']['url'];
-					}
-					else
-					{
-						$url = false;
-					}
-					
-					if($url !== false)
-						echo "<a href=\"{$url}\" rel=\"external\">Download</a>";
-					else
-						echo "&nbsp;";
-				?>
+				<?php if($version['download'] !== FALSE) : ?>
+				<a href="<?= $version['download']['url'] ?>" rel="external">Download</a>
+				<?php endif; ?>
 			</td>
 		</tr>
 		<?php if ($version['notes']) : ?>
@@ -68,7 +51,3 @@
 <p>All extensions are up-to-date</p>
 
 <?php endif; ?>
-
-
-
-<h3>Installed Extensions</h3>
