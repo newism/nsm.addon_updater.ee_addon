@@ -4,11 +4,11 @@ class Nsm_addon_updater_acc
 {
 	var $name	 		= 'NSM Add-on Updater';
 	var $id	 			= 'nsm_addon_updater';
-	var $version	 	= '1.0';
+	var $version	 	= '0.1.0';
 	var $description	= 'Accessory for NSM Addon Updater.';
 	var $sections	 	= array();
 	var $cache_lifetime	= 86400;
-	
+
 	/**
 	* Set Sections
 	*
