@@ -5,6 +5,11 @@ Written by: [Leevi Graham](http://twitter.com/leevigraham), Technical Director o
 
 NSM Addon Updater is an EE 2.0 accessory that checks an external RSS feed for version updates and displays them in your extension admin.
 
+[![NSM Addon Updater](http://s3.amazonaws.com/ember/IkCzaTK16iyE0MYgXrL9l4FlBtSUy48C_m.png)](http://emberapp.com/leevigraham/images/nsm-addon-updater/sizes/l)
+
+Developers
+----------
+
 If you want to include NSM Addon updater support in your addon create a config.php file in your addon folder and add:
 
 	<?php
