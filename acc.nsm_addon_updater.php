@@ -8,6 +8,7 @@ class Nsm_addon_updater_acc
 	var $description	= 'Accessory for NSM Addon Updater.';
 	var $sections	 	= array();
 	var $cache_lifetime	= 86400;
+	var $test_mode		= TRUE;
 
 	/**
 	* Set Sections
@@ -108,7 +109,7 @@ class Nsm_addon_updater_acc
 				$url = $config['nsm_addon_updater']['versions_xml'];
 	
 				# Get the XML again if it isn't in the cache
-				if(!$xml = $this->_readCache($url, $EE->config->item('cache_path')))
+				if($this->test_mode || !$xml = $this->_readCache($url, $EE->config->item('cache_path')))
 				{
 					$c = FALSE;
 					$c = curl_init($url);
