@@ -8,7 +8,7 @@ class Nsm_addon_updater_acc
 	var $description	= 'Accessory for NSM Addon Updater.';
 	var $sections	 	= array();
 	var $cache_lifetime	= 86400;
-	var $test_mode		= TRUE;
+	var $test_mode		= FALSE;
 
 	/**
 	* Set Sections
