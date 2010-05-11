@@ -70,8 +70,6 @@ class Nsm_addon_updater_acc
 		}
 		$EE->cp->load_package_js("accessory_tab");
 		$EE->cp->load_package_css("accessory_tab");
-		// $script_url = BASE . '&amp;C=javascript&amp;M=load&amp;package=nsm_addon_updater&amp;file=update_notifications';
-		// $EE->cp->add_to_foot("<script src='".$script_url."' type='text/javascript' charset='utf-8'></script>");
 
 		$this->sections['Available Updates'] = $EE->load->view("updates", array('versions' => $versions), TRUE); 
 	}
@@ -148,7 +146,7 @@ class Nsm_addon_updater_acc
 	 **/
 	private function _createCacheFile($data, $filename, $path)
 	{
-		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . __CLASS__;
+		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
 		$filepath = $cache_path ."/". $filename . ".xml";
 
 		if (! is_dir($cache_path))
