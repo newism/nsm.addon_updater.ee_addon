@@ -1,7 +1,7 @@
 <?php
 
 $config['name']				= 'NSM Addon Updater';
-$config['version']	 		= '0.1.0';
+$config['version']	 		= '0.1.1';
 
 $config['nsm_addon_updater']['versions_xml'] 			= 'http://github.com/newism/nsm.addon_updater.ee_addon/raw/master/versions.xml';
 $config['nsm_addon_updater']['custom_download_url'] 	= array('Nsm_addon_updater_acc', 'nsm_addon_updater_download_url');
