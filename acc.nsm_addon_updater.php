@@ -107,8 +107,12 @@ class Nsm_addon_updater_acc
 				$url = $config['nsm_addon_updater']['versions_xml'];
 	
 				# Get the XML again if it isn't in the cache
-				if($this->test_mode || !$xml = $this->_readCache($url, $EE->config->item('cache_path')))
+				if(
+					$this->test_mode
+					|| !$xml = $this->_readCache(md5($url))
+				)
 				{
+					// print("checking cache:" . $addon_id . "<br />");
 					$c = FALSE;
 					$c = curl_init($url);
 					curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
@@ -144,10 +148,10 @@ class Nsm_addon_updater_acc
 	 * @param		$url string A URL used as a unique identifier
 	 * @return		void
 	 **/
-	private function _createCacheFile($data, $filename, $path)
+	private function _createCacheFile($data, $key, $path)
 	{
-		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
-		$filepath = $cache_path ."/". $filename . ".xml";
+		$cache_path = APPPATH.'cache/' . __CLASS__;
+		$filepath = $cache_path ."/". $key . ".xml";
 
 		if (! is_dir($cache_path))
 			@mkdir($cache_path . "", 0777, TRUE);
@@ -180,10 +184,13 @@ class Nsm_addon_updater_acc
 	 * @param		$url string A URL used as a unique identifier
 	 * @return		string The cached data
 	 **/
-	private function _readCache($url,$path)
+	private function _readCache($key)
 	{
-		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . "nsm_addon_updater".__CLASS__;
-		$filepath = $cache_path ."/". md5($url) . ".xml";
+		$cache_path = APPPATH.'cache/' . __CLASS__;
+		$filepath = $cache_path ."/". $key . ".xml";
+
+		// $cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . "nsm_addon_updater".__CLASS__;
+		// $filepath = $cache_path ."/". md5($url) . ".xml";
 
 		if ( ! @file_exists($filepath))
 			return FALSE;
