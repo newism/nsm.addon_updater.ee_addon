@@ -22,18 +22,11 @@ class Nsm_addon_updater_acc
 	var $name	 		= 'NSM Add-on Updater';
 
 	/**
-	 * The accessory id
-	 *
-	 * @var string
-	 **/
-	var $id	 			= 'nsm_addon_updater';
-
-	/**
 	 * Version
 	 *
 	 * @var string
 	 **/
-	var $version	 	= '1.0.0RC1';
+	var $version	 	= '1.0.0';
 
 	/**
 	 * Description
@@ -71,7 +64,7 @@ class Nsm_addon_updater_acc
 	 **/
 	function __construct()
 	{
-		$this->addon_id = strtolower(substr(__CLASS__,0,-4));
+		$this->addon_id = $this->id = strtolower(substr(__CLASS__,0,-4));
 	}
 
 	/**
@@ -135,7 +128,7 @@ class Nsm_addon_updater_acc
 
 		$this->sections['Available Updates'] = $EE->load->view("updates", array('versions' => $versions), TRUE); 
 	}
-	
+
 	// =======================
 	// = XML Feeds Functions =
 	// =======================
@@ -161,19 +154,19 @@ class Nsm_addon_updater_acc
 		foreach($EE->addons->_packages as $addon_id => $addon)
 		{
 			$config_file = PATH_THIRD . '/' . $addon_id . '/config.php';
-			
+
 			if(!file_exists($config_file))
 				continue;
-				
+
 			include $config_file;
-	
+
 			# Is there a file with the xml url?
 			if(isset($config['nsm_addon_updater']['versions_xml']))
 			{
 				$url = $config['nsm_addon_updater']['versions_xml'];
-	
+
 				# Get the XML again if it isn't in the cache
-				if($this->test_mode || ! $xml = $this->_readCache($url, $EE->config->item('cache_path')))
+				if($this->test_mode || ! $xml = $this->_readCache(md5($url)))
 				{
 
 					log_message('debug', "Checking for updates via CURL: {$addon_id}");
@@ -187,17 +180,17 @@ class Nsm_addon_updater_acc
 					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302")
 					{
 						$xml = $curls[$addon_id]->data;
-						$this->_createCacheFile($xml, md5($url), $EE->config->item('cache_path'));
+						$this->_createCacheFile($xml, md5($url));
 					}
 				}
 			}
-			
+
 			# If there isn't an error with the XML
 			if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
 			{
 				$feeds[$addon_id] = $xml;
 			}
-			
+
 			unset($config);
 		}
 
@@ -205,29 +198,67 @@ class Nsm_addon_updater_acc
 	}
 
 	/**
-	 * Reads data from a file cache
+	 * Creates a cache file populated with data based on a URL
 	 *
 	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		private
+	 * @param		$data string The data we need to cache
 	 * @param		$url string A URL used as a unique identifier
-	 * @return		string The cached data
+	 * @return		void
 	 **/
-	private function _readCache($url, $path)
+	private function _createCacheFile($data, $key)
 	{
-		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.$this->addon_id : $path . $this->addon_id;
-		$filepath = $cache_path ."/". md5($url) . ".xml";
+		$cache_path = APPPATH.'cache/' . __CLASS__;
+		$filepath = $cache_path ."/". $key . ".xml";
+	
+		if (! is_dir($cache_path))
+			mkdir($cache_path . "", 0777, TRUE);
+		
+		if(! is_really_writable($cache_path))
+			return;
+
+		if ( ! $fp = fopen($filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		{
+			// print("<!-- Unable to write cache file: ".$filepath." -->\n");
+			log_message('error', "Unable to write cache file: ".$filepath);
+			return;
+		}
+	
+		flock($fp, LOCK_EX);
+		fwrite($fp, $data);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+		chmod($filepath, DIR_WRITE_MODE);
+	
+		// print("<!-- Cache file written: " . $filepath . " -->\n");
+		log_message('debug', "Cache file written: " . $filepath);
+	}
+
+	/**
+	 * Modify the download URL
+	 *
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @param		$versions array 
+	 * @return		array Modified versions URL
+	 **/
+	private function _readCache($key)
+	{
+		$cache = FALSE;
+		$cache_path = APPPATH.'cache/' . __CLASS__;
+		$filepath = $cache_path ."/". $key . ".xml";
 
 		if ( ! file_exists($filepath))
 			return FALSE;
-	
 		if ( ! $fp = fopen($filepath, FOPEN_READ))
 			return FALSE;
 
 		if( filemtime($filepath) + $this->cache_lifetime < time() )
 		{
 			unlink($filepath);
-			//print("<!-- Cache file has expired. File deleted: " . $filepath . " -->\n");
+			print("<!-- Cache file has expired. File deleted: " . $filepath . " -->\n");
 			log_message('debug', "Cache file has expired. File deleted");
 			return FALSE;
 		}
@@ -243,52 +274,12 @@ class Nsm_addon_updater_acc
 	}
 
 	/**
-	 * Creates a cache file populated with data based on a URL
-	 *
-	 * @version		1.0.0
-	 * @since		Version 1.0.0
-	 * @access		private
-	 * @param		$data string The data we need to cache
-	 * @param		$url string A URL used as a unique identifier
-	 * @return		void
-	 **/
-	private function _createCacheFile($data, $filename, $path)
-	{
-		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.$this->addon_id : $path . $this->addon_id;
-		$filepath = $cache_path ."/". $filename . ".xml";
-
-		if (! is_dir($cache_path))
-			@mkdir($cache_path . "", 0777, TRUE);
-		
-		if(! is_really_writable($cache_path))
-			return;
-
-		if ( ! $fp = @fopen($filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			//print("<!-- Unable to write cache file: ".$filepath." -->\n");
-			log_message('error', "Unable to write cache file: ".$filepath);
-			return;
-		}
-
-		flock($fp, LOCK_EX);
-		fwrite($fp, $data);
-		flock($fp, LOCK_UN);
-		fclose($fp);
-		@chmod($filepath, DIR_WRITE_MODE);
-
-		//print("<!-- Cache file written: " . $filepath . " -->\n");
-		log_message('debug', "Cache file written: " . $filepath);
-	}
-
-	/**
 	 * Modify the download URL
 	 *
-	 * @version		1.0.0
-	 * @since		Version 1.0.0
-	 * @access		private
-	 * @param		$versions array 
-	 * @return		array Modified versions URL
-	 **/
+	 * @author your name
+	 * @param $param
+	 * @return return type
+	 */
 	public static function nsm_addon_updater_download_url($versions)
 	{
 		return $versions['download']['url'];

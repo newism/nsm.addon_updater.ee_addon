@@ -5,6 +5,7 @@
 #accessoryTabs .nsm_addon_updater .accessoryHandle{display:none;}
 #accessoryTabs .nsm_addon_updater span.badge{
 	background:rgb(231, 23, 75);
+	display:block;
 	_background:-webkit-gradient(radial, 50% 50%, 0, 50% 50%, 9, from(#ed1c24), to(#ba161c));
 	border:1px solid #b5123b;
 	border-radius:30px;
@@ -12,12 +13,12 @@
 	-moz-border-radius:30px;
 	-webkit-border-radius:30px;
 	color:#fff;
-	font-size:10px;
-	line-height:10px;
+	font-size:8px;
+	line-height:8px;
 	text-align:center;
-	padding:4px;
+	padding:3px;
 	position:absolute; top:-12px; right:-20px;
-	min-width:10px;
+	min-width:8px;
 	text-shadow: 0 -1px 0 #b5123b;
 	
 }

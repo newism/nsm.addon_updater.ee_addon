@@ -31,5 +31,18 @@
 			</description>
 			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/0.1.0" length="10199" type="application/zip" />
 		 </item>
+		<item>
+			<title>Version 0.1.1</title>
+			<ee_addon:version>0.1.1</ee_addon:version>
+			<link>https://github.com/newism/nsm.addon_updater.ee_addon/tree/0.1.1</link>
+			<pubDate>Sat, 26 May 2010 10:20:00 +1100</pubDate>
+			<description><![CDATA[
+				<ul>
+					<li>Fixed caching issues</li>
+				</ul>
+			]]>
+			</description>
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/0.1.1" length="10506" type="application/zip" />
+		 </item>
 	</channel>
 </rss>
