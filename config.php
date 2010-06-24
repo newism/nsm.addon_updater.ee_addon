@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Config file for NSM Addon Updater
+ *
+ * @package			NsmAddonUpdater
+ * @version			1.0.0RC1
+ * @author			Leevi Graham <http://leevigraham.com>
+ * @copyright 		Copyright (c) 2007-2010 Newism
+ * @license 		Commercial - please see LICENSE file included with this distribution
+ * @link			http://expressionengine-addons.com/nsm-addon-updater
+ * @see			http://expressionengine-addons.com/nsm-example-addon
+ */
+
+
 $config['name']				= 'NSM Addon Updater';
 $config['version']	 		= '0.1.0';
 

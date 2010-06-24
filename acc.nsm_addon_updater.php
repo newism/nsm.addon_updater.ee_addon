@@ -1,19 +1,81 @@
 <?php
 
+/**
+ * NSM Addon Updater Accessory
+ *
+ * @package			NsmAddonUpdater
+ * @version			1.0.0RC1
+ * @author			Leevi Graham <http://leevigraham.com>
+ * @copyright 		Copyright (c) 2007-2010 Newism
+ * @license 		Commercial - please see LICENSE file included with this distribution
+ * @link			http://expressionengine-addons.com/nsm-example-addon
+ * @see				http://expressionengine.com/public_beta/docs/development/accessories.html
+ */
+
 class Nsm_addon_updater_acc 
 {
+	/**
+	 * The accessory name
+	 *
+	 * @var string
+	 **/
 	var $name	 		= 'NSM Add-on Updater';
+
+	/**
+	 * The accessory id
+	 *
+	 * @var string
+	 **/
 	var $id	 			= 'nsm_addon_updater';
-	var $version	 	= '0.1.0';
+
+	/**
+	 * Version
+	 *
+	 * @var string
+	 **/
+	var $version	 	= '1.0.0RC1';
+
+	/**
+	 * Description
+	 *
+	 * @var string
+	 **/
 	var $description	= 'Accessory for NSM Addon Updater.';
+
+	/**
+	 * Sections
+	 *
+	 * @var array
+	 **/
 	var $sections	 	= array();
+
+	/**
+	 * Cache lifetime
+	 *
+	 * @var int
+	 **/
 	var $cache_lifetime	= 86400;
+
+	/**
+	 * Is the addon in test mode
+	 *
+	 * @var boolean
+	 **/
 	var $test_mode		= FALSE;
 
 	/**
-	* Set Sections
-	*
-	* Set content for the accessory
+	 * Constructor
+	 *
+	 * @return void
+	 * @author Leevi Graham
+	 **/
+	function __construct()
+	{
+		$this->addon_id = strtolower(substr(__CLASS__,0,-4));
+	}
+
+	/**
+	* Set the sections and content for the accessory
 	*
 	* @access	public
 	* @return	void
@@ -23,7 +85,7 @@ class Nsm_addon_updater_acc
 		$EE =& get_instance();
 		$versions = FALSE;
 
-		if($feeds = $this->_updateFeeds($EE))
+		if($feeds = $this->_updateFeeds())
 		{
 			foreach ($feeds as $addon_id => $feed)
 			{
@@ -80,14 +142,18 @@ class Nsm_addon_updater_acc
 
 	/**
 	 * Loads all the feeds from the cache or new from the server
+	 *
 	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		private
 	 * @return		array An array of RSS feed XML
 	 **/
-	public function _updateFeeds($EE)
+	public function _updateFeeds()
 	{
-		require APPPATH . "third_party/nsm_addon_updater/libraries/Epicurl.php";
+		$EE =& get_instance();
+
+		require PATH_THIRD . "nsm_addon_updater/libraries/Epicurl.php";
+
 		$sources = FALSE;
 		$feeds = FALSE;
 		$mc = EpiCurl::getInstance();
@@ -107,8 +173,11 @@ class Nsm_addon_updater_acc
 				$url = $config['nsm_addon_updater']['versions_xml'];
 	
 				# Get the XML again if it isn't in the cache
-				if($this->test_mode || !$xml = $this->_readCache($url, $EE->config->item('cache_path')))
+				if($this->test_mode || ! $xml = $this->_readCache($url, $EE->config->item('cache_path')))
 				{
+
+					log_message('debug', "Checking for updates via CURL: {$addon_id}");
+
 					$c = FALSE;
 					$c = curl_init($url);
 					curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
@@ -136,7 +205,46 @@ class Nsm_addon_updater_acc
 	}
 
 	/**
+	 * Reads data from a file cache
+	 *
+	 * @version		1.0.0
+	 * @since		Version 1.0.0
+	 * @access		private
+	 * @param		$url string A URL used as a unique identifier
+	 * @return		string The cached data
+	 **/
+	private function _readCache($url, $path)
+	{
+		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.$this->addon_id : $path . $this->addon_id;
+		$filepath = $cache_path ."/". md5($url) . ".xml";
+
+		if ( ! file_exists($filepath))
+			return FALSE;
+	
+		if ( ! $fp = fopen($filepath, FOPEN_READ))
+			return FALSE;
+
+		if( filemtime($filepath) + $this->cache_lifetime < time() )
+		{
+			unlink($filepath);
+			//print("<!-- Cache file has expired. File deleted: " . $filepath . " -->\n");
+			log_message('debug', "Cache file has expired. File deleted");
+			return FALSE;
+		}
+
+		flock($fp, LOCK_SH);
+		$cache = fread($fp, filesize($filepath));
+		flock($fp, LOCK_UN);
+		fclose($fp);
+
+		//print("<!-- Loaded file from cache: " . $filepath . " -->\n");
+
+		return $cache;
+	}
+
+	/**
 	 * Creates a cache file populated with data based on a URL
+	 *
 	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		private
@@ -146,7 +254,7 @@ class Nsm_addon_updater_acc
 	 **/
 	private function _createCacheFile($data, $filename, $path)
 	{
-		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.__CLASS__ : $path . __CLASS__;
+		$cache_path = ($path == '') ? BASEPATH.'expressionengine/cache/'.$this->addon_id : $path . $this->addon_id;
 		$filepath = $cache_path ."/". $filename . ".xml";
 
 		if (! is_dir($cache_path))
@@ -173,49 +281,14 @@ class Nsm_addon_updater_acc
 	}
 
 	/**
-	 * Reads data from a file cache
+	 * Modify the download URL
+	 *
 	 * @version		1.0.0
 	 * @since		Version 1.0.0
 	 * @access		private
-	 * @param		$url string A URL used as a unique identifier
-	 * @return		string The cached data
+	 * @param		$versions array 
+	 * @return		array Modified versions URL
 	 **/
-	private function _readCache($url,$path)
-	{
-		$cache_path = ($path == '') ? BASEPATH.'cache/'.__CLASS__ : $path . "nsm_addon_updater".__CLASS__;
-		$filepath = $cache_path ."/". md5($url) . ".xml";
-
-		if ( ! @file_exists($filepath))
-			return FALSE;
-	
-		if ( ! $fp = @fopen($filepath, FOPEN_READ))
-			return FALSE;
-
-		if( filemtime($filepath) + $this->cache_lifetime < time() )
-		{
-			@unlink($filepath);
-			//print("<!-- Cache file has expired. File deleted: " . $filepath . " -->\n");
-			log_message('debug', "Cache file has expired. File deleted");
-			return FALSE;
-		}
-
-		flock($fp, LOCK_SH);
-		$cache = @fread($fp, filesize($filepath));
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		//print("<!-- Loaded file from cache: " . $filepath . " -->\n");
-
-		return $cache;
-	}
-	
-	/**
-	 * Modify the download URL
-	 *
-	 * @author your name
-	 * @param $param
-	 * @return return type
-	 */
 	public static function nsm_addon_updater_download_url($versions)
 	{
 		return $versions['download']['url'];

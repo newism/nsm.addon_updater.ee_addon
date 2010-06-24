@@ -3,16 +3,16 @@
 	<thead>
 		<tr>
 			<th scope="col">Addon</th>
-			<th scope="col">Installed version</th>
-			<th scope="col">Latest version</th>
+			<th scope="col">Installed</th>
+			<th scope="col">Latest</th>
 			<th scope="col">&nbsp;</th>
 			<th scope="col">&nbsp;</th>
 			<th scope="col">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
-		<?php foreach ($versions as $count => $version) : $class = ($count%2) ? "even" : "odd"; ?>
-		<tr class="<?=$class?>">
+		<?php $count = 0; foreach ($versions as $version) : $class = ($count%2) ? "alt" : ""; $count++; ?>
+		<tr class="<?=$class?>" >
 			<th scope="row"><?= $version['addon_name']; ?></th>
 			<td><?= $version['installed_version']; ?></td>
 			<td><?= $version['latest_version']; ?></td>

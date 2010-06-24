@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * NSM Addon Updater Language File
+ *
+ * @package			NsmAddonUpdater
+ * @version			1.0.0RC1
+ * @author			Leevi Graham <http://leevigraham.com>
+ * @copyright 		Copyright (c) 2007-2010 Newism
+ * @license 		Commercial - please see LICENSE file included with this distribution
+ * @link			http://expressionengine-addons.com/nsm-addon-updater
+ * @see				http://expressionengine.com/public_beta/docs/development/modules.html#lang_file
+ */
 $lang = array(
 
 	'global_settings_title'		=> 'Global settings',
