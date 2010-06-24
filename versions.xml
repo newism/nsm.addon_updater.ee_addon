@@ -44,5 +44,19 @@
 			</description>
 			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/0.1.1" length="10506" type="application/zip" />
 		 </item>
+		<item>
+			<title>Version 1.0.0RC1</title>
+			<ee_addon:version>1.0.0RC1</ee_addon:version>
+			<link>https://github.com/newism/nsm.addon_updater.ee_addon/tree/1.0.0RC1</link>
+			<pubDate>Thursday, 25 Jun 2010 00:38:00 +1100</pubDate>
+			<description><![CDATA[
+				<ul>
+					<li>Set chache folder</li>
+					<li>Improved UI</li>
+				</ul>
+			]]>
+			</description>
+			<enclosure url="https://github.com/newism/nsm.addon_updater.ee_addon/zipball/1.0.0RC1" length="10506" type="application/zip" />
+		 </item>
 	</channel>
 </rss>

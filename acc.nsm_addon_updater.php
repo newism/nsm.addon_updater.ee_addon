@@ -26,7 +26,7 @@ class Nsm_addon_updater_acc
 	 *
 	 * @var string
 	 **/
-	var $version	 	= '1.0.0';
+	var $version	 	= '1.0.0RC1';
 
 	/**
 	 * Description
@@ -224,13 +224,13 @@ class Nsm_addon_updater_acc
 			log_message('error', "Unable to write cache file: ".$filepath);
 			return;
 		}
-	
+
 		flock($fp, LOCK_EX);
 		fwrite($fp, $data);
 		flock($fp, LOCK_UN);
 		fclose($fp);
 		chmod($filepath, DIR_WRITE_MODE);
-	
+
 		// print("<!-- Cache file written: " . $filepath . " -->\n");
 		log_message('debug', "Cache file written: " . $filepath);
 	}
