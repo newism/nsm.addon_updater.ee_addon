@@ -42,11 +42,10 @@
 #nsm_addon_updater.accessory table tbody td{border-left:1px solid #37454d}
 #nsm_addon_updater.accessory table th, 
 #nsm_addon_updater.accessory table td{
-	border-top: 1px solid #37454d;
+	border-bottom: 1px solid #37454d;
 	font-size:11px;
 	margin:0;
 	padding:10px;
 	text-align:left;
 }
-
-#nsm_addon_updater{display:block!important;}
+#nsm_addon_updater.accessory table td.active{border-bottom:none;}

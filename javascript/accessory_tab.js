@@ -10,12 +10,14 @@ $("#nsm_au_updates").each(function(index) {
 			{
 				$target.hide();
 				$trigger.removeClass('active').data("active", false);
+				$trigger.parent().removeClass('active');
 				$header.attr('rowspan', 1);
 			}
 			else
 			{
 				$target.show();
 				$trigger.addClass('active').data("active", true);
+				$trigger.parent().addClass('active');
 				$header.attr('rowspan', 2);
 			}
 			return false;
