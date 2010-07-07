@@ -4,7 +4,7 @@
  * NSM Addon Updater Accessory
  *
  * @package			NsmAddonUpdater
- * @version			1.0.0RC1
+ * @version			1.0.0
  * @author			Leevi Graham <http://leevigraham.com>
  * @copyright 		Copyright (c) 2007-2010 Newism
  * @license 		Commercial - please see LICENSE file included with this distribution
@@ -26,7 +26,7 @@ class Nsm_addon_updater_acc
 	 *
 	 * @var string
 	 **/
-	var $version	 	= '1.0.0RC1';
+	var $version	 	= '1.0.0';
 
 	/**
 	 * Description
