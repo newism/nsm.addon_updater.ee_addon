@@ -126,7 +126,7 @@ class Nsm_addon_updater_acc
 		$EE->cp->load_package_js("accessory_tab");
 		$EE->cp->load_package_css("accessory_tab");
 
-		$this->sections['Available Updates'] = $EE->load->view("updates", array('versions' => $versions), TRUE); 
+		$this->sections['Available Updates'] = $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE); 
 	}
 
 	// =======================
