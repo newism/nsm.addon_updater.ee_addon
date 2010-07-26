@@ -174,7 +174,7 @@ class Nsm_addon_updater_acc
 					$c = FALSE;
 					$c = curl_init($url);
 					curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-					curl_setopt($c, CURLOPT_FOLLOWLOCATION, 1);
+					@curl_setopt($c, CURLOPT_FOLLOWLOCATION, 1);
 					$curls[$addon_id] = $mc->addCurl($c);
 					$xml = FALSE;
 					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302")
