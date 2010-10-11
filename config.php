@@ -15,7 +15,7 @@
 $config['name']				= 'NSM Addon Updater';
 $config['version']	 		= '1.0.1';
 
-$config['nsm_addon_updater']['versions_xml'] 			= 'http://expressionengine-addons.com/nsm-addon-updater/release-notes';
+$config['nsm_addon_updater']['versions_xml'] 			= 'http://expressionengine-addons.com/nsm-addon-updater/release-notes/feed';
 $config['nsm_addon_updater']['custom_download_url'] 	= array('Nsm_addon_updater_acc', 'nsm_addon_updater_download_url');
 
 // Local test XML
