@@ -1,4 +1,4 @@
-$("#nsm_au_updates").each(function(index) {
+$("#nsm_addon_updater").each(function(index) {
 	$("a.note-trigger", $(this))
 		.data("active", false)
 		.click(function() {
