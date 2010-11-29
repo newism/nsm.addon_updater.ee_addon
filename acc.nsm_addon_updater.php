@@ -96,6 +96,7 @@ class Nsm_addon_updater_acc
 
 						if(version_compare($version_number, $config['version'], '>') && version_compare($version_number, $latest_version, '>') )
 						{
+						    $latest_version = $version_number;
 							$versions[$addon_id] = array(
 								'addon_name' 		=> $config['name'],
 								'installed_version' => $config['version'],
