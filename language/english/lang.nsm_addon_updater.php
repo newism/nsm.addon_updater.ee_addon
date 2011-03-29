@@ -4,11 +4,11 @@
  * NSM Addon Updater Language File
  *
  * @package			NsmAddonUpdater
- * @version			1.0.1
+ * @version			1.1.0
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
  * @copyright 		Copyright (c) 2007-2010 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
- * @link			http://expressionengine-addons.com/nsm-addon-updater
+ * @link			http://ee-garage.com/nsm-addon-updater
  * @see				http://expressionengine.com/public_beta/docs/development/modules.html#lang_file
  */
 $lang = array(
@@ -25,7 +25,7 @@ $lang = array(
 	'member_group_access_label'	=> 'Which member groups will see the update notice?',
 
 	'extension_settings_saved_success' => 'Extension settings saved succesfully',
-	'nsm_addon_updater_disabled_notice' => '<a href="http://expressionengine-addons.com/nsm-addon-updater/">NSM Addon Updater</a> must be installed and activated for this feature.',
+	'nsm_addon_updater_disabled_notice' => '<a href="http://ee-garage.com/nsm-addon-updater/">NSM Addon Updater</a> must be installed and activated for this feature.',
 	
 	'save_extension_settings' => 'Save extension settings',
 

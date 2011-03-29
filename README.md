@@ -25,7 +25,7 @@ Example RSS 2.0 XML Feed
 ------------------------
 
 	<?xml version="1.0" encoding="utf-8"?>
-	<rss version="2.0" xmlns:ee_addon="http://expressionengine-addons.com/nsm_addon_updater/#rss-xml">
+	<rss version="2.0" xmlns:ee_addon="http://ee-garage.com/nsm_addon_updater/#rss-xml">
 		<channel>
 			<title>NSM Addon Updater Changelog</title>
 			<link>http://yourdomain.com/nsm.addon_updater.ee_addon/appcast.xml</link>

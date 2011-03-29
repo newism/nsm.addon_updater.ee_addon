@@ -14,7 +14,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<?php $count = 0; foreach ($versions as $version) : $class = ($count%2) ? "alt" : ""; $count++; ?>
+				<?php $count = 0; foreach ($versions as $version) : $class = ($count%2) ? "odd" : "even"; $count++; ?>
 				<tr class="<?=$class?>" >
 					<th scope="row"><?= $version['addon_name']; ?></th>
 					<td><?= $version['installed_version']; ?></td>
