@@ -269,7 +269,14 @@ class Nsm_addon_updater_acc
 		}
 
 		flock($fp, LOCK_SH);
-		$cache = fread($fp, filesize($filepath));
+
+		// Prevent an error being thrown when an empty xml is returned (as in, an empty cache file)
+		if(filesize($filepath) > 0) {
+			$cache = fread($fp, filesize($filepath));
+		} else {
+			$cache = false;
+		}
+
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
