@@ -78,24 +78,19 @@ class Nsm_addon_updater_acc
 		$EE =& get_instance();
 		$versions = FALSE;
 
-		if($feeds = $this->_updateFeeds())
-		{
-			foreach ($feeds as $addon_id => $feed)
-			{
+		if ($feeds = $this->_updateFeeds()) {
+			foreach ($feeds as $addon_id => $feed) {
 				$namespaces = $feed->getNameSpaces(true);
 				$latest_version = 0;
 
 				include PATH_THIRD . '/' . $addon_id . '/config.php';
 
-				if(!empty($feed->channel->item))
-				{
-					foreach ($feed->channel->item as $version)
-					{
+				if (!empty($feed->channel->item)) {
+					foreach ($feed->channel->item as $version) {
 						$ee_addon = $version->children($namespaces['ee_addon']);
 						$version_number = (string)$ee_addon->version;
 
-						if(version_compare($version_number, $config['version'], '>') && version_compare($version_number, $latest_version, '>') )
-						{
+						if (version_compare($version_number, $config['version'], '>') && version_compare($version_number, $latest_version, '>') ) {
 						    $latest_version = $version_number;
 							$versions[$addon_id] = array(
 								'addon_name' 		=> $config['name'],
@@ -109,16 +104,14 @@ class Nsm_addon_updater_acc
 								'extension_class' 	=> $addon_id
 							);
 
-							if($version->enclosure)
-							{
+							if ($version->enclosure) {
 								$versions[$addon_id]['download'] = array(
 									'url' => (string)$version->enclosure['url'],
 									'type' =>  (string)$version->enclosure['type'],
 									'size' => (string)$version->enclosure['length']
 								);
 
-								if(isset($config['nsm_addon_updater']['custom_download_url']))
-								{
+								if (isset($config['nsm_addon_updater']['custom_download_url'])) {
 									$versions[$addon_id]['download']['url'] = call_user_func($config['nsm_addon_updater']['custom_download_url'], $versions[$addon_id]);
 								}
 							}
@@ -156,23 +149,21 @@ class Nsm_addon_updater_acc
 		$feeds = FALSE;
 		$mc = EpiCurl::getInstance();
 
-		foreach($EE->addons->_packages as $addon_id => $addon)
-		{
+		foreach ($EE->addons->_packages as $addon_id => $addon) {
 			$config_file = PATH_THIRD . '/' . $addon_id . '/config.php';
 
-			if(!file_exists($config_file))
+			if (!file_exists($config_file)) {
 				continue;
+			}
 
 			include $config_file;
 
 			# Is there a file with the xml url?
-			if(isset($config['nsm_addon_updater']['versions_xml']))
-			{
+			if (isset($config['nsm_addon_updater']['versions_xml'])) {
 				$url = $config['nsm_addon_updater']['versions_xml'];
 
 				# Get the XML again if it isn't in the cache
-				if($this->test_mode || ! $xml = $this->_readCache(md5($url)))
-				{
+				if ($this->test_mode || ! $xml = $this->_readCache(md5($url))) {
 
 					log_message('debug', "Checking for updates via CURL: {$addon_id}");
 
@@ -182,8 +173,7 @@ class Nsm_addon_updater_acc
 					@curl_setopt($c, CURLOPT_FOLLOWLOCATION, 1);
 					$curls[$addon_id] = $mc->addCurl($c);
 					$xml = FALSE;
-					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302")
-					{
+					if($curls[$addon_id]->code == "200" || $curls[$addon_id]->code == "302") {
 						$xml = $curls[$addon_id]->data;
 						$this->_createCacheFile($xml, md5($url));
 					}
@@ -191,8 +181,7 @@ class Nsm_addon_updater_acc
 			}
 
 			# If there isn't an error with the XML
-			if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA))
-			{
+			if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA)) {
 				$feeds[$addon_id] = $xml;
 			}
 
@@ -217,14 +206,13 @@ class Nsm_addon_updater_acc
 		$cache_path = APPPATH.'cache/' . __CLASS__;
 		$filepath = $cache_path ."/". $key . ".xml";
 	
-		if (! is_dir($cache_path))
+		if (! is_dir($cache_path)) {
 			mkdir($cache_path . "", 0777, TRUE);
-		
-		if(! is_really_writable($cache_path))
+		}
+		if (! is_really_writable($cache_path)) {}
 			return;
-
-		if ( ! $fp = fopen($filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
+		}
+		if ( ! $fp = fopen($filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
 			// print("<!-- Unable to write cache file: ".$filepath." -->\n");
 			log_message('error', "Unable to write cache file: ".$filepath);
 			return;
@@ -255,14 +243,21 @@ class Nsm_addon_updater_acc
 		$cache_path = APPPATH.'cache/' . __CLASS__;
 		$filepath = $cache_path ."/". $key . ".xml";
 
-		if ( ! file_exists($filepath))
+		if ( ! file_exists($filepath)) {
 			return FALSE;
-		if ( ! $fp = fopen($filepath, FOPEN_READ))
+		}
+		if ( ! $fp = fopen($filepath, FOPEN_READ)) {
+			@unlink($filepath);
+			log_message('debug', "Error reading cache file. File deleted");
 			return FALSE;
-
-		if( filemtime($filepath) + $this->cache_lifetime < time() )
-		{
-			unlink($filepath);
+		}
+		if ( ! filesize($filepath)) {
+			@unlink($filepath);
+			log_message('debug', "Error getting cache file size. File deleted");
+			return FALSE;
+		}
+		if ( filemtime($filepath) + $this->cache_lifetime < time() ) {
+			@unlink($filepath);
 			// print("<!-- Cache file has expired. File deleted: " . $filepath . " -->\n");
 			log_message('debug', "Cache file has expired. File deleted");
 			return FALSE;
