@@ -78,8 +78,10 @@ class Nsm_addon_updater_acc
 		$EE =& get_instance();
 		$versions = FALSE;
 
-		if ($feeds = $this->_updateFeeds()) {
-			foreach ($feeds as $addon_id => $feed) {
+		if($feeds = $this->_updateFeeds())
+		{
+			foreach ($feeds as $addon_id => $feed)
+			{
 				$namespaces = $feed->getNameSpaces(true);
 				$latest_version = 0;
 
@@ -111,7 +113,8 @@ class Nsm_addon_updater_acc
 									'size' => (string)$version->enclosure['length']
 								);
 
-								if (isset($config['nsm_addon_updater']['custom_download_url'])) {
+								if(isset($config['nsm_addon_updater']['custom_download_url']))
+								{
 									$versions[$addon_id]['download']['url'] = call_user_func($config['nsm_addon_updater']['custom_download_url'], $versions[$addon_id]);
 								}
 							}
