@@ -4,9 +4,9 @@
  * NSM Addon Updater Language File
  *
  * @package			NsmAddonUpdater
- * @version			1.1.0
+ * @version			1.1.1
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
- * @copyright 		Copyright (c) 2007-2010 Newism <http://newism.com.au>
+ * @copyright 		Copyright (c) 2007-2012 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
  * @link			http://ee-garage.com/nsm-addon-updater
  * @see				http://expressionengine.com/public_beta/docs/development/modules.html#lang_file

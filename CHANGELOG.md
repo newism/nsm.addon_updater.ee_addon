@@ -1,6 +1,11 @@
 NSM Addon Updater - Changelog
 =============================
 
+v1.1.1
+------
+
+* [fix] Problematic cache files now deleted and regenerated properly
+
 v1.1.0
 ------
 
