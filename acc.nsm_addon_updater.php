@@ -146,7 +146,7 @@ class Nsm_addon_updater_acc
 	{
 		$EE =& get_instance();
 
-		require PATH_THIRD . "nsm_addon_updater/libraries/Epicurl.php";
+		require_once PATH_THIRD . "nsm_addon_updater/libraries/Epicurl.php";
 
 		$sources = FALSE;
 		$feeds = FALSE;
