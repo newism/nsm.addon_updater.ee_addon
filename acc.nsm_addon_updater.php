@@ -1,10 +1,12 @@
 <?php
 
+require PATH_THIRD.'nsm_addon_updater/config.php';
+
 /**
  * NSM Addon Updater Accessory
  *
  * @package			NsmAddonUpdater
- * @version			1.1.1
+ * @version			1.2.0
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
  * @copyright 		Copyright (c) 2007-2012 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
@@ -19,14 +21,14 @@ class Nsm_addon_updater_acc
 	 *
 	 * @var string
 	 **/
-	var $name	 		= 'NSM Add-on Updater';
+	var $name	 		= NSM_ADDON_UPDATER_NAME;
 
 	/**
 	 * Version
 	 *
 	 * @var string
 	 **/
-	var $version	 	= '1.1.1';
+	var $version	 	= NSM_ADDON_UPDATER_VERSION;
 
 	/**
 	 * Description
@@ -64,7 +66,7 @@ class Nsm_addon_updater_acc
 	 **/
 	function __construct()
 	{
-		$this->addon_id = $this->id = strtolower(substr(__CLASS__,0,-4));
+		$this->addon_id = $this->id = NSM_ADDON_UPDATER_ADDON_ID;
 	}
 
 	/**
@@ -159,7 +161,7 @@ class Nsm_addon_updater_acc
 	{
 		$EE =& get_instance();
 
-		require_once PATH_THIRD . "nsm_addon_updater/libraries/Epicurl.php";
+		require_once PATH_THIRD . NSM_ADDON_UPDATER_ADDON_ID . "/libraries/Epicurl.php";
 
 		$sources = FALSE;
 		$feeds = FALSE;
@@ -219,7 +221,7 @@ class Nsm_addon_updater_acc
 	 **/
 	private function _createCacheFile($data, $key)
 	{
-		$cache_path = APPPATH.'cache/' . __CLASS__;
+		$cache_path = APPPATH.'cache/' . NSM_ADDON_UPDATER_ADDON_ID;
 		$filepath = $cache_path ."/". $key . ".xml";
 	
 		if (! is_dir($cache_path)) {
@@ -256,7 +258,7 @@ class Nsm_addon_updater_acc
 	private function _readCache($key)
 	{
 		$cache = FALSE;
-		$cache_path = APPPATH.'cache/' . __CLASS__;
+		$cache_path = APPPATH.'cache/' . NSM_ADDON_UPDATER_ADDON_ID;
 		$filepath = $cache_path ."/". $key . ".xml";
 
 		if ( ! file_exists($filepath)) {
@@ -272,7 +274,11 @@ class Nsm_addon_updater_acc
 			log_message('debug', "Error getting cache file size. File deleted");
 			return FALSE;
 		}
-		if ( filemtime($filepath) + $this->cache_lifetime < time() ) {
+		
+		// randomise cache timeout by 0-10mins to stagger cache regen
+		$cache_timeout = $this->cache_lifetime + (rand(0,10) * 3600);
+		
+		if ( (filemtime($filepath) + $cache_timeout) < time() ) {
 			@unlink($filepath);
 			// print("<!-- Cache file has expired. File deleted: " . $filepath . " -->\n");
 			log_message('debug', "Cache file has expired. File deleted");
