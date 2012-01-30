@@ -78,10 +78,8 @@ class Nsm_addon_updater_acc
 		$EE =& get_instance();
 		$versions = FALSE;
 
-		if($feeds = $this->_updateFeeds())
-		{
-			foreach ($feeds as $addon_id => $feed)
-			{
+		if ($feeds = $this->_updateFeeds()) {
+			foreach ($feeds as $addon_id => $feed) {
 				$namespaces = $feed->getNameSpaces(true);
 				$latest_version = 0;
 
@@ -113,8 +111,7 @@ class Nsm_addon_updater_acc
 									'size' => (string)$version->enclosure['length']
 								);
 
-								if(isset($config['nsm_addon_updater']['custom_download_url']))
-								{
+								if (isset($config['nsm_addon_updater']['custom_download_url'])) {
 									$versions[$addon_id]['download']['url'] = call_user_func($config['nsm_addon_updater']['custom_download_url'], $versions[$addon_id]);
 								}
 							}
@@ -184,7 +181,7 @@ class Nsm_addon_updater_acc
 			}
 
 			# If there isn't an error with the XML
-			if($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA)) {
+			if ($xml = @simplexml_load_string($xml, 'SimpleXMLElement',  LIBXML_NOCDATA)) {
 				$feeds[$addon_id] = $xml;
 			}
 
@@ -212,7 +209,7 @@ class Nsm_addon_updater_acc
 		if (! is_dir($cache_path)) {
 			mkdir($cache_path . "", 0777, TRUE);
 		}
-		if (! is_really_writable($cache_path)) {}
+		if (! is_really_writable($cache_path)) {
 			return;
 		}
 		if ( ! $fp = fopen($filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
