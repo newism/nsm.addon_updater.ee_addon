@@ -76,6 +76,22 @@ class Nsm_addon_updater_acc
 	function set_sections()
 	{
 		$EE =& get_instance();
+
+		$EE->cp->load_package_js("accessory_tab");
+		$EE->cp->load_package_css("accessory_tab");
+
+		$this->sections['Available Updates'] = $EE->load->view("/accessory/index", array(), TRUE); ; 
+	}
+
+	/**
+	* Set the sections and content for the accessory
+	*
+	* @access	public
+	* @return	void
+	*/
+	function process_ajax_feeds()
+	{
+		$EE =& get_instance();
 		$versions = FALSE;
 
 		if ($feeds = $this->_updateFeeds()) {
@@ -124,7 +140,7 @@ class Nsm_addon_updater_acc
 		$EE->cp->load_package_js("accessory_tab");
 		$EE->cp->load_package_css("accessory_tab");
 
-		$this->sections['Available Updates'] = $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE); 
+		echo $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE); 
 	}
 
 	// =======================
