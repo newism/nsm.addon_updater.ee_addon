@@ -4,7 +4,7 @@
  * NSM Addon Updater Language File
  *
  * @package			NsmAddonUpdater
- * @version			1.1.1
+ * @version			1.2.0
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
  * @copyright 		Copyright (c) 2007-2012 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
@@ -18,7 +18,7 @@ $lang = array(
 
 	'enable_extension_title'	=> 'Check for 3rd party developer addon updates?',
 	'enable_extension_info'		=> 'For those extensions that allow it, NSM Addon Updater checks to see if your addons (plugins, extensions & modules) have been updated. Results are cached for a set period of time.',
-	'enable_extension_label'	=> 'Would you like LG Addon Updater to check for developer updates and display them on your CP homepage?',
+	'enable_extension_label'	=> 'Would you like NSM Addon Updater to check for developer updates and display them on your CP homepage?',
 	'cache_expiration_label'	=> 'How many days would you like the update check cached for?',
 
 	'extension_access_title'	=> 'Extension access',
