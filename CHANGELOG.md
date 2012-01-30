@@ -1,6 +1,11 @@
 NSM Addon Updater - Changelog
 =============================
 
+v1.2.0
+------
+
+* [enhancement] Update feeds now loaded via AJAX request
+
 v1.1.1
 ------
 

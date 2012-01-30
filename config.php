@@ -4,16 +4,21 @@
  * Config file for NSM Addon Updater
  *
  * @package			NsmAddonUpdater
- * @version			1.1.1
+ * @version			1.2.0
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
  * @copyright 		Copyright (c) 2007-2012 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
  * @link			http://ee-garage.com/nsm-addon-updater
  */
 
+if(!defined('NSM_ADDON_UPDATER_VERSION')) {
+	define('NSM_ADDON_UPDATER_VERSION', '1.2.0');
+	define('NSM_ADDON_UPDATER_NAME', 'NSM Addon Updater');
+	define('NSM_ADDON_UPDATER_ADDON_ID', 'nsm_addon_updater');
+}
 
-$config['name']				= 'NSM Addon Updater';
-$config['version']	 		= '1.1.1';
+$config['name'] 	= NSM_ADDON_UPDATER_NAME;
+$config["version"] 	= NSM_ADDON_UPDATER_VERSION;
 
 $config['nsm_addon_updater']['versions_xml'] 			= 'http://ee-garage.com/nsm-addon-updater/release-notes/feed';
 $config['nsm_addon_updater']['custom_download_url'] 	= array('Nsm_addon_updater_acc', 'nsm_addon_updater_download_url');
