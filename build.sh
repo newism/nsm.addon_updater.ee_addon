@@ -14,6 +14,8 @@ cp -R language ${third_party_path}
 cp -R libraries ${third_party_path}
 cp -R models ${third_party_path}
 cp -R views ${third_party_path}
+cp -R javascript ${third_party_path}
+cp -R css ${third_party_path}
 cp LICENSE.md ${path}
 cp README.md ${path}
 cp -R themes ${path}
