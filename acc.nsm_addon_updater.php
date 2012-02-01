@@ -142,7 +142,8 @@ class Nsm_addon_updater_acc
 		$EE->cp->load_package_js("accessory_tab");
 		$EE->cp->load_package_css("accessory_tab");
 
-		echo $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE); 
+		echo $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE);
+		exit;
 	}
 
 	// =======================
