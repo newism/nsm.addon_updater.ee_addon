@@ -1,6 +1,11 @@
 NSM Addon Updater - Changelog
 =============================
 
+v1.2.1
+------
+
+* [fix] Accessory process calls 'exit' to prevent further action
+
 v1.2.0
 ------
 

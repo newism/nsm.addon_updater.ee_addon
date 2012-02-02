@@ -6,7 +6,7 @@ require PATH_THIRD.'nsm_addon_updater/config.php';
  * NSM Addon Updater Accessory
  *
  * @package			NsmAddonUpdater
- * @version			1.2.0
+ * @version			1.2.1
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
  * @copyright 		Copyright (c) 2007-2012 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
@@ -142,7 +142,8 @@ class Nsm_addon_updater_acc
 		$EE->cp->load_package_js("accessory_tab");
 		$EE->cp->load_package_css("accessory_tab");
 
-		echo $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE); 
+		echo $EE->load->view("/accessory/updates", array('versions' => $versions), TRUE);
+		exit;
 	}
 
 	// =======================
