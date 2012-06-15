@@ -8,10 +8,10 @@ $("#nsm_addon_updater").each(function(index) {
 		url: url,
 		success: function(data) {
 			$data = $(data);
-			// no correct return data? exit
-			if( $data[0].id !== "nsm_addon_updater_ajax_return") {
-				return false;
-			}
+			// // no correct return data? exit
+			// if( $data[0].id !== "nsm_addon_updater_ajax_return") {
+			// 	return false;
+			// }
 		
 			$content.html($data);
 			$acc.find("a.note-trigger")
