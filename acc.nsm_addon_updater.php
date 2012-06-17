@@ -56,7 +56,7 @@ class Nsm_addon_updater_acc
 	 *
 	 * @var boolean
 	 **/
-	var $test_mode		= true;
+	var $test_mode		= false;
 
 	/**
 	 * The cache directory for the addon
@@ -107,7 +107,6 @@ class Nsm_addon_updater_acc
 		$EE->load->helper('file');
 		
 		$this->_prepCacheDirectory();
-
 		if ($feeds = $this->_updateFeeds()) {
 
 			foreach ($feeds as $addon_id => $feed) {
@@ -121,10 +120,11 @@ class Nsm_addon_updater_acc
 					'download' 			=> false,
 					'extension_class' 	=> $addon_id,
 					'error'				=> false,
+					'row_class'			=> false,
 					'latest_version' 	=> 0,
 				);
 				
-				if(is_array($feed['error'])) {
+				if(!$feed instanceof SimpleXMLElement) {
 					$data					= array_merge($data, $feed);
 					$versions[$addon_id]	= $data;
 					continue;
@@ -137,8 +137,9 @@ class Nsm_addon_updater_acc
 					foreach ($feed->channel->item as $version) {
 						$ee_addon		= $version->children($namespaces['ee_addon']);
 						$version_number	= (string) $ee_addon->version;
-
-						if (version_compare($version_number, $config['version'], '>') && version_compare($version_number, $latest_version, '>')) {
+						
+						// version is greater than installed version
+						if (version_compare($version_number, $config['version'], '>=') && version_compare($version_number, $latest_version, '>')) {
 						    $latest_version			= $version_number;
 							$versions[$addon_id]	= array_merge($data, array(
 								'title' 			=> (string) $version->title,
@@ -148,6 +149,7 @@ class Nsm_addon_updater_acc
 								'created_at'		=> $version->pubDate,
 								'extension_class' 	=> $addon_id,
 								'latest_version' 	=> $version_number,
+								'row_class'			=> 'info',
 							));
 
 							if ($version->enclosure) {
@@ -167,6 +169,17 @@ class Nsm_addon_updater_acc
 						}
 					}
 				}
+				
+				// the search for the latest version should be complete now
+				if (version_compare($config['version'], $latest_version, '>=')) {
+					$versions[$addon_id]	= array_merge($data, array(
+						'error' 			=> 'This add-on is up-to-date',
+						'latest_version' 	=> $latest_version,
+						'row_class'			=> 'success',
+					));
+				}
+				// clear the config
+				unset($config);
 			}
 		}
 
@@ -218,7 +231,7 @@ class Nsm_addon_updater_acc
 				$url = $config['nsm_addon_updater']['versions_xml'];
 
 				# Get the XML again if it isn't in the cache
-				if ($this->test_mode || ! $data = $this->_readCache(md5($url))) {
+				if ($this->test_mode || ! $response = $this->_readCache(md5($url))) {
 
 					log_message('debug', "Checking for updates via CURL: {$addon_id}");
 
@@ -234,7 +247,8 @@ class Nsm_addon_updater_acc
 					// if theres an error with the curl request set an error
 					if (!in_array($curls[$addon_id]->code, array(200, 301, 302))) {
 						$data = array(
-							'error' => 'Could not find changelog for addon'
+							'error' => 'Could not find changelog for addon',
+							'row_class' => 'error'
 						);
 					}
 				}
@@ -245,15 +259,23 @@ class Nsm_addon_updater_acc
 						$data	= $xml;
 					} catch (Exception $e) {
 						// problem with data
+						$data = false;
 					}
 				}
-				if (!$data) {
-					$data	= array('error' => "Could not process addon's changelog");
-				}
 			} else {
-				$data = array('error' => 'Addon doesn\'t have a NSM Addon Updater URL');
+				$data = array(
+					'error'		=> 'Addon doesn\'t have a NSM Addon Updater URL',
+					'row_class' => ''
+				);
 			}
-
+			
+			if (!$data) {
+				$data	= array(
+					'error'		=> "Could not process addon's changelog",
+					'row_class' => 'error'
+				);
+			}
+			
 			$feeds[$addon_id] = $data;
 			unset($config);
 		}

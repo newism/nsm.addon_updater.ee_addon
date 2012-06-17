@@ -1,6 +1,6 @@
 <div id="nsm_addon_updater_ajax_return">
-	<?php if($versions != FALSE) : ?>
-	<table>
+	<?php if($versions != false) : ?>
+	<table class="data col-sortable">
 		<thead>
 			<tr>
 				<th scope="col">Addon</th>
@@ -14,15 +14,15 @@
 		<tbody>
 			<?php $count = 0; foreach ($versions as $version) : $class = ($count%2) ? "odd" : "even"; $count++; ?>
 			
-			<?php if(false != $version['error']) : ?>
-				<tr class="<?=$class?> alert error">
+			<?php if($version['error']) : ?>
+				<tr class="<?=$class?> alert <?= $version['row_class'] ?>">
 					<th scope="row"><?= $version['addon_name']; ?></th>
 					<td><?= $version['installed_version']; ?></td>
 					<td colspan="4"><?= $version['error'] ?></td>
 				</tr>
 			<?php else : ?>
 
-				<tr class="<?=$class?>">
+				<tr class="<?=$class?> alert <?= $version['row_class'] ?>">
 					<th scope="row"><?= $version['addon_name']; ?></th>
 					<td><?= $version['installed_version']; ?></td>
 					<td><?= $version['latest_version']; ?></td>
@@ -37,7 +37,7 @@
 						<?php endif; ?>
 					</td>
 					<td>
-						<?php if($version['download'] !== FALSE) : ?>
+						<?php if($version['download'] !== false) : ?>
 						<a href="<?= $version['download']['url'] ?>" rel="external">Download</a>
 						<?php endif; ?>
 					</td>
