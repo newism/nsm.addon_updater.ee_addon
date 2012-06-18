@@ -70,7 +70,7 @@ class Nsm_addon_updater_acc
 	 *
 	 * @var boolean
 	 **/
-	var $hide_incompatible	= false;
+	var $hide_incompatible	= true;
 
 
 	/**
@@ -270,7 +270,7 @@ class Nsm_addon_updater_acc
 					// if theres an error with the curl request set an error
 					if (!in_array($curls[$addon_id]->code, array(200, 301, 302))) {
 						$data = array(
-							'error' => 'Could not find changelog for addon',
+							'error' => 'Could not find changelog for add-on',
 							'row_class' => 'error'
 						);
 					}
@@ -288,7 +288,7 @@ class Nsm_addon_updater_acc
 				// data still false? mark as an error
 				if (!$data) {
 					$data	= array(
-						'error'		=> "Could not process addon's changelog",
+						'error'		=> "There was a problem processing the <a href='{$config['nsm_addon_updater']['versions_xml']}' target='_blank'>versions.xml</a> file for this add-on",
 						'row_class' => 'error'
 					);
 				}
