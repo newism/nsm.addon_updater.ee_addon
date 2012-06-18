@@ -4,7 +4,7 @@
  * Config file for NSM Addon Updater
  *
  * @package			NsmAddonUpdater
- * @version			1.2.1
+ * @version			1.3.0
  * @author			Leevi Graham <http://leevigraham.com> - Technical Director, Newism
  * @copyright 		Copyright (c) 2007-2012 Newism <http://newism.com.au>
  * @license 		Commercial - please see LICENSE file included with this distribution
@@ -12,7 +12,7 @@
  */
 
 if(!defined('NSM_ADDON_UPDATER_VERSION')) {
-	define('NSM_ADDON_UPDATER_VERSION', '1.2.1');
+	define('NSM_ADDON_UPDATER_VERSION', '1.3.0');
 	define('NSM_ADDON_UPDATER_NAME', 'NSM Addon Updater');
 	define('NSM_ADDON_UPDATER_ADDON_ID', 'nsm_addon_updater');
 }

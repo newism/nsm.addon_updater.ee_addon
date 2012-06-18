@@ -1,6 +1,15 @@
 NSM Addon Updater - Changelog
 =============================
 
+v1.3.0
+------
+
+* [fix] Improved error handling for problematic versions.xml URLs
+* [enhancement] Results table styled using NSM Morphine classes and is now column sortable
+* [enhancement] Added boolean flag `$hide_incompatible` in `acc.nsm_addon_updater.php` to hide add-ons that are incompatible with NSM Addon Updater
+* [enhancement] Added boolean flag `$hide_uptodate` in `acc.nsm_addon_updater.php` to hide add-ons that are up-to-date
+* [enhancement] Caching functions rewritten to use CodeIgniter file helpers
+
 v1.2.1
 ------
 
