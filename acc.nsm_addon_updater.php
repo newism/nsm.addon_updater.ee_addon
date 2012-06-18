@@ -21,49 +21,64 @@ class Nsm_addon_updater_acc
 	 *
 	 * @var string
 	 **/
-	var $name	 		= NSM_ADDON_UPDATER_NAME;
+	var $name	 			= NSM_ADDON_UPDATER_NAME;
 
 	/**
 	 * Version
 	 *
 	 * @var string
 	 **/
-	var $version	 	= NSM_ADDON_UPDATER_VERSION;
+	var $version	 		= NSM_ADDON_UPDATER_VERSION;
 
 	/**
 	 * Description
 	 *
 	 * @var string
 	 **/
-	var $description	= 'Accessory for NSM Addon Updater.';
+	var $description		= 'Accessory for NSM Addon Updater.';
 
 	/**
 	 * Sections
 	 *
 	 * @var array
 	 **/
-	var $sections	 	= array();
+	var $sections	 		= array();
 
 	/**
 	 * Cache lifetime
 	 *
 	 * @var int
 	 **/
-	var $cache_lifetime	= 86400;
+	var $cache_lifetime		= 86400;
 
 	/**
 	 * Is the addon in test mode
 	 *
 	 * @var boolean
 	 **/
-	var $test_mode		= false;
+	var $test_mode			= false;
+
+	/**
+	 * Hide up-to-date addons
+	 *
+	 * @var boolean
+	 **/
+	var $hide_uptodate		= false;
+
+	/**
+	 * Hide addons that are incompatible
+	 *
+	 * @var boolean
+	 **/
+	var $hide_incompatible	= false;
+
 
 	/**
 	 * The cache directory for the addon
 	 *
-	 * @var boolean
+	 * @var string
 	 **/
-	var $cache_path		= false;
+	var $cache_path			= false;
 
 	/**
 	 * Constructor
@@ -172,11 +187,17 @@ class Nsm_addon_updater_acc
 				
 				// the search for the latest version should be complete now
 				if (version_compare($config['version'], $latest_version, '>=')) {
-					$versions[$addon_id]	= array_merge($data, array(
-						'error' 			=> 'This add-on is up-to-date',
-						'latest_version' 	=> $latest_version,
-						'row_class'			=> 'success',
-					));
+					// don't hide uptodate addons? output the correct message
+					if (!$this->hide_uptodate) {
+						$versions[$addon_id]	= array_merge($data, array(
+							'error' 			=> 'This add-on is up-to-date',
+							'latest_version' 	=> $latest_version,
+							'row_class'			=> 'success',
+						));
+					} else {
+						// remove uptodate addon from list
+						unset($versions[$addon_id]);
+					}
 				}
 				// clear the config
 				unset($config);
@@ -237,11 +258,13 @@ class Nsm_addon_updater_acc
 
 					$c = false;
 					$c = curl_init($url);
+					
 					curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
 					@curl_setopt($c, CURLOPT_FOLLOWLOCATION, 1);
-					$curls[$addon_id] = $mc->addCurl($c);
 					
-					$response = $curls[$addon_id]->data;
+					$curls[$addon_id]	= $mc->addCurl($c);
+					$response			= $curls[$addon_id]->data;
+					
 					$this->_createCacheFile($response, md5($url));
 					
 					// if theres an error with the curl request set an error
@@ -262,21 +285,27 @@ class Nsm_addon_updater_acc
 						$data = false;
 					}
 				}
+				// data still false? mark as an error
+				if (!$data) {
+					$data	= array(
+						'error'		=> "Could not process addon's changelog",
+						'row_class' => 'error'
+					);
+				}
+				
 			} else {
-				$data = array(
-					'error'		=> 'Addon doesn\'t have a NSM Addon Updater URL',
-					'row_class' => ''
-				);
+				if (!$this->hide_incompatible) {
+					$data = array(
+						'error'		=> 'Addon doesn\'t have a NSM Addon Updater URL',
+						'row_class' => ''
+					);
+				}
 			}
 			
-			if (!$data) {
-				$data	= array(
-					'error'		=> "Could not process addon's changelog",
-					'row_class' => 'error'
-				);
+			if ($data) {
+				$feeds[$addon_id] = $data;
 			}
 			
-			$feeds[$addon_id] = $data;
 			unset($config);
 		}
 		return $feeds;
