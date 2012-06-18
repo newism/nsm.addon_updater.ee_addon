@@ -8,17 +8,13 @@ $("#nsm_addon_updater").each(function(index) {
 		url: url,
 		success: function(data) {
 			$data = $(data);
-			// no correct return data? exit
-			if( $data[0].id !== "nsm_addon_updater_ajax_return") {
-				return false;
-			}
 		
 			$content.html($data);
 			$acc.find("a.note-trigger")
 				.data("active", false)
 				.click(function() {
 					$trigger = $(this);
-					$row = $(this).parent().parent()
+					$row = $(this).parent().parent();
 					$header = $row.find("th");
 					$target = $row.next();
 					if ($trigger.data('active')) {
@@ -34,8 +30,15 @@ $("#nsm_addon_updater").each(function(index) {
 					}
 					return false;
 				});
-			$updates = $("tbody tr th", $acc);
+			$updates = $("tbody tr.info", $acc);
 			$("#accessoryTabs .nsm_addon_updater").append("<span class='badge'>"+$updates.length+"</span>");
+			$("#nsm_addon_updater_ajax_return table").tablesorter({
+				headers: {
+					3: {sorter: false},
+					4: {sorter: false},
+					5: {sorter: false}
+				}
+			});
 		},
 		error: function() {
 			$content.addClass('alert error').text('There was an error retrieving the update feeds.');
